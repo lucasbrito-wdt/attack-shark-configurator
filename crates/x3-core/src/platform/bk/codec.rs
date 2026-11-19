@@ -219,6 +219,9 @@ pub fn c1_triplet(p: &Profile, index: usize) -> [u8; 3] {
 pub fn build_button_map(spec: &ModelSpec, wire: &BkWire, p: &Profile) -> Vec<u8> {
     if wire.family != BkFamily::C1 {
         let mut b = build_buttons(p);
+        // profile slot 6 is the rear (back) button, as on xvi; the BK wire puts the front (forward) button
+        // in slot 6 (factory tables), so the two triplets swap. Macro numbers inside them stay consistent.
+        b[21..27].rotate_left(3);
         // slots the app does not expose (DPI keys, wheel) keep the factory action: the profile holds
         // action 0 there, which encodes as 0x01 (disabled) and turned off the X6 wheel and DPI keys.
         // Without a factory table they stay 00 00 00, which kept the X6 wheel working.

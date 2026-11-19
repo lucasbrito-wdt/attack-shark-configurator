@@ -213,7 +213,8 @@ fn c1_button_types() {
     // family B without a factory table: the exposed slots as family A, the hidden ones 00 00 00
     let b = build_button_map(spec("x3-max"), &wire("x3-max"), &p);
     let a = packets::build_buttons(&p);
-    assert_eq!((&b[..12], &b[21..27]), (&a[..12], &a[21..27]));
+    // ... with the side slots swapped (wire slot 6 is the front button)
+    assert_eq!((&b[..12], &b[21..24], &b[24..27]), (&a[..12], &a[24..27], &a[21..24]));
     assert!(b[12..21].iter().chain(&b[27..57]).all(|x| *x == 0));
     assert_eq!(u16::from_be_bytes([b[57], b[58]]), checksum16(&b[3..=56]));
 }
@@ -221,14 +222,20 @@ fn c1_button_types() {
 #[test]
 fn x6_hidden_slots_keep_the_factory_actions() {
     // the slots the app hides (DPI keys 3..5, slot 8, wheel 16/17) are the X6 factory map that
-    // restored a real X6; the exposed ones (0..2, 6, 7) follow the profile
+    // restored a real X6; the exposed ones (0..2, 6, 7) follow the profile. The default profile gives
+    // the whole factory map: wire slot 6 is the front button (forward), slot 7 the rear one (back).
     let b = build_button_map(spec("x6"), &wire("x6"), &Profile::default());
     let slot = |i: usize| b[3 + 3 * i];
-    assert_eq!([slot(0), slot(1), slot(2), slot(6), slot(7)], [0x02, 0x03, 0x04, 0x05, 0x06]);
+    assert_eq!([slot(0), slot(1), slot(2), slot(6), slot(7)], [0x02, 0x03, 0x04, 0x06, 0x05]);
     assert_eq!([slot(3), slot(4), slot(5), slot(8), slot(16), slot(17)], [0x0D, 0x0E, 0x0F, 0x3C, 0x0A, 0x09]);
     assert!((9..16).all(|i| slot(i) == 0x01));
     assert!((0..18).all(|i| b[4 + 3 * i] == 0 && b[5 + 3 * i] == 0));
     assert_eq!(u16::from_be_bytes([b[57], b[58]]), checksum16(&b[3..=56]));
+    // byte for byte the map read back from the restored X6 (what the official driver writes)
+    let factory = "083B010200000300000400000D00000E00000F00000600000500003C0000010000010000010000010000010000010000010000\
+                   0A00000900000094";
+    let hex: String = b.iter().map(|x| format!("{x:02X}")).collect();
+    assert_eq!(hex, factory);
 }
 
 #[test]
