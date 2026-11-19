@@ -1,4 +1,4 @@
-# ATTACK SHARK X3 - Device Protocol and Feature Spec
+# ATTACK SHARK - Device Protocol and Feature Spec
 
 Reverse-engineered from the vendor Windows configurator (`X3.exe`, x86 PE, DuiLib UI,
 sha256 `db7e366f06aa6b06e73cd3a76c7c4d02cf8927e0d9b80d6a838a179d4c52ab41`) plus its bundled
@@ -387,7 +387,7 @@ Events arrive as `(type: u16, value: u16)`. They come through window messages fr
 | `0x6000` | 1..10 | Stored at `this+0x174` and nothing else. `this+0x174` is **never read**, so this event is never displayed. | O |
 | `0x7000` | 0..7 | Device changed light mode: `P+0x94C = v`, then save | O |
 | `0x8000` | 1..5 | Save only (I: onboard key event, e.g. LED loop) | O / I |
-| `0x1010` | 1, 2 | Not in the spec. Observed on hardware over BLE (FEE4 notifications `10 10 02 00` and `10 10 01 00`). Meaning unknown, probably the DPI stage. Parsed as `Event::Unknown { kind, value }`, logged under `X3_LOG_EVENTS=1` and never acted on. | O (bytes), unknown (meaning) |
+| `0x1010` | 1, 2 | Not in the spec. Observed on hardware over BLE (FEE4 notifications `10 10 02 00` and `10 10 01 00`). Meaning unknown, probably the DPI stage. Parsed as `Event::Unknown { kind, value }`, logged under `SHARK_LOG_EVENTS=1` and never acted on. | O (bytes), unknown (meaning) |
 
 Note: `0x1010` falls inside the accept filter below but has no handler in `sub_4132d0`, so the original app would also ignore it.
 
@@ -479,7 +479,7 @@ The order risk is harmless if the parser self-checks. In the swapped order, a he
 
 **Diagnostic only (not in the original app).** Over BLE the X3 also exposes the standard Battery Service
 `0x180F` / Battery Level `0x2A19`. Its value is unreliable on this device (always 100 %, observed), so it is
-only logged (`bas_battery=<n>` under `X3_LOG_EVENTS=1`) and never used for the display. The `0x4010` path above
+only logged (`bas_battery=<n>` under `SHARK_LOG_EVENTS=1`) and never used for the display. The `0x4010` path above
 is the only source.
 
 ### 4.5 Event test vectors

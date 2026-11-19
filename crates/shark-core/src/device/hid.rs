@@ -79,7 +79,7 @@ impl HidTransport {
         }
         // family-b unknowns #7/#9: which FA65 / X3 PRO collection takes the output report is not settled
         if !crate::platform::allow_unverified() {
-            return Err(DeviceError("writes over the 4K link are unverified; set X3_ALLOW_UNVERIFIED=1".into()));
+            return Err(DeviceError("writes over the 4K link are unverified; set SHARK_ALLOW_UNVERIFIED=1".into()));
         }
         let frames = self.codec.frame(self.pid, data);
         if frames.is_empty() {

@@ -1,4 +1,4 @@
-// Mirrors src-tauri/src/dto.rs and crates/x3-core/src/model.rs (camelCase). Keep in sync: Rust tests assert the key names.
+// Mirrors src-tauri/src/dto.rs and crates/shark-core/src/model.rs (camelCase). Keep in sync: Rust tests assert the key names.
 
 export type LinkMode = "wired" | "dongle" | "ble" | "none";
 export type BatterySource = "vendor-event" | "ble-bas" | "none";
@@ -86,7 +86,7 @@ export interface Profile {
   sleepMinutes: number | null;
   deepSleepMinutes: number | null;
   lighting: Lighting;
-  /** All 18 slots; capabilities.buttons lists the ones the X3 exposes. */
+  /** All 18 slots; capabilities.buttons lists the ones the model exposes. */
   buttons: ButtonBinding[];
 }
 
@@ -170,7 +170,7 @@ export interface Capabilities {
   dpiStep: number;
   dpiHighStepFrom: number | null;
   dpiEncoding: "a" | "t" | "h" | "direct";
-  /** false: apply refuses DPI writes with unverified_encoding unless X3_ALLOW_UNVERIFIED=1. */
+  /** false: apply refuses DPI writes with unverified_encoding unless SHARK_ALLOW_UNVERIFIED=1. */
   dpiVerified: boolean;
   /** Hz, 125..8000. */
   pollingRates: number[];

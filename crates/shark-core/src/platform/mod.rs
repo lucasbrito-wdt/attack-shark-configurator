@@ -37,7 +37,7 @@ impl Platform {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PlanError {
-    /// The model's DPI encoding is not verified on hardware and `X3_ALLOW_UNVERIFIED=1` is not set.
+    /// The model's DPI encoding is not verified on hardware and `SHARK_ALLOW_UNVERIFIED=1` is not set.
     UnverifiedEncoding,
     /// No codec is registered for the model's platform.
     Unsupported,
@@ -69,7 +69,7 @@ pub trait PlatformCodec: Sync {
     /// Model bound by the first input report on a shared receiver, if `pid` is one.
     fn detect_from_report(&self, pid: u16, report: &[u8]) -> Option<&'static ModelSpec>;
     /// True when `pkt` writes DPI with an encoding not verified on hardware: apply skips only these
-    /// packets unless `X3_ALLOW_UNVERIFIED=1`. A codec that keeps the default (cannot tell) has its
+    /// packets unless `SHARK_ALLOW_UNVERIFIED=1`. A codec that keeps the default (cannot tell) has its
     /// whole plan refused instead, through `plan(.., allow_unverified = false)`.
     fn is_unverified_dpi(&self, _spec: &ModelSpec, _pkt: &[u8]) -> bool {
         false
@@ -136,9 +136,9 @@ pub fn default_model() -> &'static ModelSpec {
     by_id("x6").expect("registry holds x6")
 }
 
-/// `X3_ALLOW_UNVERIFIED=1` lets apply send DPI with an encoding not verified on hardware.
+/// `SHARK_ALLOW_UNVERIFIED=1` lets apply send DPI with an encoding not verified on hardware.
 pub fn allow_unverified() -> bool {
-    std::env::var("X3_ALLOW_UNVERIFIED").is_ok_and(|v| v == "1")
+    std::env::var("SHARK_ALLOW_UNVERIFIED").is_ok_and(|v| v == "1")
 }
 
 /// Every USB (vid, pid) to watch, with the link kind it represents. Deduplicated, table order.

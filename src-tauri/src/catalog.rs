@@ -1,8 +1,8 @@
 //! Static action catalog for the button menu and the key pickers.
 
 use crate::dto::{ActionCatalog, ActionCategory, ActionEntry, KeyEntry, ModifierEntry};
-use x3_core::protocol::actions::{ACTIONS, Group};
-use x3_core::protocol::keys::{MOD_ALT, MOD_CTRL, MOD_SHIFT, MOD_WIN, hid_label};
+use shark_core::protocol::actions::{ACTIONS, Group};
+use shark_core::protocol::keys::{MOD_ALT, MOD_CTRL, MOD_SHIFT, MOD_WIN, hid_label};
 
 const GROUPS: [(Group, &str); 6] = [
     (Group::Mouse, "mouse"),

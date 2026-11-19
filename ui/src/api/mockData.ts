@@ -1,4 +1,4 @@
-// Static data for the mock backend: mirrors crates/x3-core (defaults, action catalog). Capabilities come from mockModels.ts.
+// Static data for the mock backend: mirrors crates/shark-core (defaults, action catalog). Capabilities come from mockModels.ts.
 
 import type { ActionCatalog, ActionCategory, Capabilities, KeyEntry, Profile } from "./types";
 

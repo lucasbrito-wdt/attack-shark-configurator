@@ -1,19 +1,19 @@
 [package]
-name = "attack-shark-x3"
+name = "attack-shark-configurator"
 version = "0.1.0"
 edition = "2024"
-description = "Open-source configurator for the ATTACK SHARK X3 mouse (macOS and Linux)"
-license = "MIT"
+description = "Open-source configurator for ATTACK SHARK mice"
+license = "GPL-3.0-only"
 
 [features]
 default = ["ble"]
-ble = ["x3-core/ble"]
+ble = ["shark-core/ble"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-x3-core = { path = "../crates/x3-core", default-features = false }
+shark-core = { path = "../crates/shark-core", default-features = false }
 tauri = { version = "2", features = ["macos-private-api", "tray-icon"] }
 tauri-plugin-dialog = "2"
 sys-locale = "0.3"

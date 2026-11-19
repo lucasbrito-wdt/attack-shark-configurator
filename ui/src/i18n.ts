@@ -18,7 +18,7 @@ export const LOCALES = [
 ] as const;
 export type Locale = (typeof LOCALES)[number]["id"];
 
-const KEY = "x3.locale";
+const KEY = "shark.locale";
 
 /** Saved choice first, then the system language (pt* -> pt-BR, es* -> es, else en). */
 export function detectLocale(saved: string | null, system: string): Locale {

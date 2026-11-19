@@ -100,7 +100,19 @@ impl Store {
 }
 
 pub fn config_path() -> Option<PathBuf> {
-    ProjectDirs::from("com", "lucasbrito", "attack-shark-x3").map(|d| d.config_dir().join("config.json"))
+    app_config("attack-shark-configurator")
+}
+
+fn app_config(app: &str) -> Option<PathBuf> {
+    ProjectDirs::from("com", "lucasbrito", app).map(|d| d.config_dir().join("config.json"))
+}
+
+/// Copy the settings saved before the app was renamed (attack-shark-x3) once; the old file stays as a backup.
+fn migrate(old: &Path, new: &Path) {
+    if !new.exists() && old.exists() {
+        let _ = new.parent().map(fs::create_dir_all);
+        let _ = fs::copy(old, new);
+    }
 }
 
 /// Write `value` as JSON atomically (temp file, then rename).
@@ -129,7 +141,11 @@ pub fn load_from(path: &Path) -> Store {
 }
 
 pub fn load() -> Store {
-    config_path().map_or_else(Store::default, |p| load_from(&p))
+    let Some(path) = config_path() else { return Store::default() };
+    if let Some(old) = app_config("attack-shark-x3") {
+        migrate(&old, &path);
+    }
+    load_from(&path)
 }
 
 pub fn save_to(path: &Path, store: &Store) -> io::Result<()> {
@@ -166,7 +182,7 @@ mod tests {
     use crate::profile::{ACTION_MACRO, MacroEvent};
 
     fn temp_file(name: &str) -> PathBuf {
-        let dir = std::env::temp_dir().join(format!("x3-test-{}-{name}", std::process::id()));
+        let dir = std::env::temp_dir().join(format!("shark-test-{}-{name}", std::process::id()));
         fs::create_dir_all(&dir).unwrap();
         dir.join("file.json")
     }
@@ -178,6 +194,19 @@ mod tests {
         p.buttons[4].macro_binding =
             Some(Macro { events: vec![MacroEvent { key: 4, down: true, delay_ms: 30 }], ..Macro::default() });
         p
+    }
+
+    #[test]
+    fn settings_from_before_the_rename_are_copied_once() {
+        let (old, new) = (temp_file("migrate-old"), temp_file("migrate-new"));
+        let _ = fs::remove_file(&new);
+        fs::write(&old, "{\"selected\":0}").unwrap();
+        migrate(&old, &new);
+        assert_eq!(fs::read_to_string(&new).unwrap(), "{\"selected\":0}");
+        assert!(old.exists(), "the old file stays as a backup");
+        fs::write(&old, "changed").unwrap();
+        migrate(&old, &new);
+        assert_eq!(fs::read_to_string(&new).unwrap(), "{\"selected\":0}", "an existing new file is never overwritten");
     }
 
     #[test]

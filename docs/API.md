@@ -1,10 +1,10 @@
 # UI <-> backend contract
 
 The web UI talks to the Rust shell (`src-tauri`) only through the typed client in `ui/src/api/client.ts`.
-Types live in `ui/src/api/types.ts` and mirror `src-tauri/src/dto.rs` (+ `crates/x3-core/src/model.rs`).
+Types live in `ui/src/api/types.ts` and mirror `src-tauri/src/dto.rs` (+ `crates/shark-core/src/model.rs`).
 Rust tests assert the JSON key names of every DTO, so renaming a field on one side breaks the build.
 Everything is camelCase. Outside Tauri (plain browser) the client uses an in-memory mock with the same
-contract; `?mock=offline|asleep|wired|ble|ble-nobas|fail|retry|verify-ok|verify-inconclusive` in the URL, or `window.__x3Mock` at runtime
+contract; `?mock=offline|asleep|wired|ble|ble-nobas|fail|retry|verify-ok|verify-inconclusive` in the URL, or `window.__sharkMock` at runtime
 (`setMode(mode, awake)`, `behavior = "ok" | "fail" | "retry-then-ok"`), selects scenarios. `?model=<id>` picks one of the
 models in `ui/src/api/mockModels.ts` (generated from the Rust registry): x6, f1, x8-pro, r1, x11, g3, v3, v6, x1, v5-se,
 r6 (XVI), x3-pro-v4 (V4).
@@ -16,14 +16,14 @@ r6 (XVI), x3-pro-v4 (V4).
   `read_back` also `unsupported`, `timeout`, `decode_failed`.
   `message` is English, for logs, not for display.
 - Unverified DPI is a partial success, not an error: when the DPI packet uses an encoding not verified on hardware and the
-  app was not started with `X3_ALLOW_UNVERIFIED=1`, apply leaves out only that packet and sends every other group.
+  app was not started with `SHARK_ALLOW_UNVERIFIED=1`, apply leaves out only that packet and sends every other group.
   `ApplyResult.skippedGroups` and `ApplyProgress.skippedGroups` then hold `{ group: "dpi", code: "unverified_encoding" }`.
   It happens when `capabilities.dpiVerified === false` (today X3/X6 and V4), or `dpiEncoding === "t"` with any stage above
   10000 DPI (the multiplier bits are copied from the vendor, not understood). The first full apply after a link comes up
   follows the same rule. The skipped DPI is NOT counted as applied: `Snapshot.pendingGroups` keeps
   `{ group: "dpi", code: "unverified_encoding" }` and `pendingChanges` stays true until a write of 0x04 succeeds;
   every later apply re-includes it (sent once the encoding is verified or the variable is set, skipped and reported again
-  otherwise). The app verifies the encoding itself with `verify_dpi_encoding` (below); `X3_ALLOW_UNVERIFIED=1` is a
+  otherwise). The app verifies the encoding itself with `verify_dpi_encoding` (below); `SHARK_ALLOW_UNVERIFIED=1` is a
   developer override only.
   The `unverified_encoding` error code is thrown only by a codec that cannot single out its DPI packet.
 - Writes over the 4K receiver (FA65) and the X3 PRO cable are also unverified: without the variable they fail per packet
@@ -110,7 +110,7 @@ Output buttons always carry `label`, the text to display.
 | `device-status` | `DeviceStatus` | on every visible change (link up/down, heartbeat, sleep/wake via heartbeat watchdog, name) |
 | `dpi-stage-changed` | `{ stage, dpi }` | the mouse button changed the DPI stage. The stored profile's `activeStage` is already updated |
 | `apply-progress` | `ApplyProgress` | `pending` when packets are queued, then `ok` or `failed`. `retry` (with `attempt`) is part of the contract but the Rust sender does not report retries yet; only the mock emits it `unconfirmed: true` on an `ok` sent over Bluetooth: the mouse acknowledges no BLE write, so the profile stays pending |
-| `device-event-raw` | `{ event }` | only with `X3_LOG_EVENTS=1`; Debug text of the parsed event (not raw bytes; raw hex goes to stderr) |
+| `device-event-raw` | `{ event }` | only with `SHARK_LOG_EVENTS=1`; Debug text of the parsed event (not raw bytes; raw hex goes to stderr) |
 | `dpi-verification` | `{ state: "running" }` or `{ state: "done", result: DpiVerification }` | a DPI encoding check started (manual or automatic) / ended. Immediate answers (`unsupported_link`, verified in the table) emit only `done` |
 
 Subscribe with `on("device-status", handler)`; it returns an unsubscribe function.
@@ -140,11 +140,11 @@ Subscribe with `on("device-status", handler)`; it returns an unsubscribe functio
 - `awake` is false when no device is connected, when a dongle link has no heartbeat for 6 s, or when the heartbeat says asleep.
   While asleep, applies return `asleep`.
 - Event types are `category | modelCode` (e.g. BLE `10 10 02 00` = DPI stage 2 on a model with code 0x10).
-  Unknown categories are logged under `X3_LOG_EVENTS=1` and otherwise ignored.
+  Unknown categories are logged under `SHARK_LOG_EVENTS=1` and otherwise ignored.
 
 ## Capabilities
 
-Built from the detected model's `ModelSpec` (`crates/x3-core/src/platform`). With no device, the last detected model
+Built from the detected model's `ModelSpec` (`crates/shark-core/src/platform`). With no device, the last detected model
 (persisted) is used, else the X6. `modelId` / `modelName` / `platform` (`"bk" | "xvi" | "v4"`) / `modelCode` identify it;
 when a device is detected as another model, call `get_snapshot` again (watch `device-status.model`).
 `dpiEncoding` is `"a" | "t" | "h" | "direct"`, `dpiVerified` false means applies skip the DPI group (`skippedGroups`).

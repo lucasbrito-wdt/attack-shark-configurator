@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "attack-shark-x3-ui",
+      "name": "attack-shark-configurator-ui",
       "dependencies": {
         "@fontsource-variable/mona-sans": "^5.3.0",
         "@tailwindcss/vite": "^4.3.5",

@@ -5,15 +5,15 @@ use crate::dto::*;
 use crate::error::{ApiError, ApiResult};
 use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
-use x3_core::device::manager::DeviceMsg;
-use x3_core::device::sender::LinkState;
-use x3_core::device::LinkKind;
-use x3_core::model::Capabilities;
-use x3_core::platform::battery;
-use x3_core::platform::{self, ModelSpec, PlanError};
-use x3_core::profile::{MAX_NAME_LEN, Profile};
-use x3_core::protocol::events::{Event, log_line};
-use x3_core::storage::{self, Store};
+use shark_core::device::manager::DeviceMsg;
+use shark_core::device::sender::LinkState;
+use shark_core::device::LinkKind;
+use shark_core::model::Capabilities;
+use shark_core::platform::battery;
+use shark_core::platform::{self, ModelSpec, PlanError};
+use shark_core::profile::{MAX_NAME_LEN, Profile};
+use shark_core::protocol::events::{Event, log_line};
+use shark_core::storage::{self, Store};
 
 /// A Tauri event waiting to be emitted once the state lock is released.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -32,7 +32,7 @@ pub struct Inner {
     /// Detected model, else the persisted last-used one, else the X6.
     pub spec: &'static ModelSpec,
     pub caps: Capabilities,
-    /// `X3_ALLOW_UNVERIFIED=1`: send DPI even with an encoding not verified on hardware.
+    /// `SHARK_ALLOW_UNVERIFIED=1`: send DPI even with an encoding not verified on hardware.
     pub allow_unverified: bool,
     pub outbox: Vec<Emit>,
     path: Option<PathBuf>,
@@ -99,7 +99,7 @@ impl Inner {
             bas_level: None,
             charging: None,
             last_status: None,
-            log_raw: std::env::var_os("X3_LOG_EVENTS").is_some_and(|v| v == "1"),
+            log_raw: std::env::var_os("SHARK_LOG_EVENTS").is_some_and(|v| v == "1"),
         }
     }
 

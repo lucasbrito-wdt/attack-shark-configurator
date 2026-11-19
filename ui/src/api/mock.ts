@@ -1,6 +1,6 @@
 // In-memory backend used when the app runs in a plain browser. Same contract as the Rust commands.
 // Control it from the URL (?mock=offline|asleep|wired|ble|ble-nobas|fail|retry|unverified|verify-ok|verify-inconclusive, ?model=<id in mockModels.ts>) or at runtime
-// via window.__x3Mock.
+// via window.__sharkMock.
 
 import { actionLabel, capabilities, catalog, defaultProfile, keyLabel, models } from "./mockData";
 import type {
@@ -38,7 +38,7 @@ export class MockBackend {
   /** Groups the last apply skipped; the backend keeps them pending until a write succeeds. */
   private pendingGroups: SkippedGroup[] = [];
   private baseCaps: Capabilities = capabilities;
-  /** Mirrors X3_ALLOW_UNVERIFIED=1; ?mock=unverified turns it off, so applies on the X6 report a skipped DPI group. */
+  /** Mirrors SHARK_ALLOW_UNVERIFIED=1; ?mock=unverified turns it off, so applies on the X6 report a skipped DPI group. */
   private allowUnverified = true;
   private lastKnown: Battery["lastKnown"] = { level: 70, charging: false, link: "dongle", at: "2026-11-19T12:00:00Z" };
   private sending = false;
@@ -63,7 +63,7 @@ export class MockBackend {
     const model = typeof location === "undefined" ? null : new URLSearchParams(location.search).get("model");
     if (model && models[model]) this.baseCaps = models[model];
     this.profiles = [this.fresh(0, "Default"), this.fresh(1, "FPS")];
-    if (typeof window !== "undefined") (window as unknown as { __x3Mock: MockBackend }).__x3Mock = this;
+    if (typeof window !== "undefined") (window as unknown as { __sharkMock: MockBackend }).__sharkMock = this;
   }
 
   /** Capabilities on the current link: XVI wired is capped at 1000 Hz, like the backend; a stored verified DPI check sets dpiVerified. */

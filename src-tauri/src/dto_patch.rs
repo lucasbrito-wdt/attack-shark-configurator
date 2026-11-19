@@ -14,7 +14,7 @@ fn within(name: &str, v: u32, min: u32, max: u32) -> ApiResult<u8> {
 }
 
 /// `v` within the model's range for `name`; refused when the model does not have the setting.
-fn ranged(name: &str, v: u8, range: Option<&x3_core::model::Range>) -> ApiResult<u8> {
+fn ranged(name: &str, v: u8, range: Option<&shark_core::model::Range>) -> ApiResult<u8> {
     let r = range.ok_or_else(|| ApiError::invalid(format!("this model has no {name} setting")))?;
     within(name, v.into(), r.min, r.max)
 }
@@ -95,7 +95,7 @@ pub fn set_action(p: &mut Profile, index: usize, action: &ActionRef, library: &[
     let mut b = profile::ButtonConfig::default();
     match action {
         ActionRef::Preset { id } => {
-            if *id == ACTION_SHORTCUT || *id == ACTION_MACRO || x3_core::protocol::actions::info(*id).is_none() {
+            if *id == ACTION_SHORTCUT || *id == ACTION_MACRO || shark_core::protocol::actions::info(*id).is_none() {
                 return Err(ApiError::invalid(format!("unknown preset action 0x{id:02X}")));
             }
             b.action_id = *id;

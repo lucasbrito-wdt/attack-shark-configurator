@@ -3,8 +3,8 @@
 //! verdict is persisted per model. A verified format equal to the model's encoding enables DPI writes.
 
 use super::*;
-use x3_core::platform::{DpiVerdict, ReadError};
-use x3_core::storage::DpiEncoding;
+use shark_core::platform::{DpiVerdict, ReadError};
+use shark_core::storage::DpiEncoding;
 
 impl Inner {
     /// The stored verdict confirms the encoding this model's DPI writes use.

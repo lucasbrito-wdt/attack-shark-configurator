@@ -1,4 +1,4 @@
-// Generated: serde_json::to_string(&x3_core::platform::by_id(id).capabilities()) per model (default features).
+// Generated: serde_json::to_string(&shark_core::platform::by_id(id).capabilities()) per model (default features).
 // Regenerate instead of editing by hand.
 
 import type { Capabilities } from "./types";

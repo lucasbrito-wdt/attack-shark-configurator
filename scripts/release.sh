@@ -16,7 +16,7 @@ export NEW_VERSION="$version"
 for f in src-tauri/tauri.conf.json ui/package.json; do
   perl -0pi -e 's/("version"\s*:\s*")[^"]*(")/$1$ENV{NEW_VERSION}$2/' "$f"
 done
-for f in src-tauri/Cargo.toml crates/x3-core/Cargo.toml; do
+for f in src-tauri/Cargo.toml crates/shark-core/Cargo.toml; do
   perl -0pi -e 's/^(version\s*=\s*")[^"]*(")/$1$ENV{NEW_VERSION}$2/m' "$f"
 done
 

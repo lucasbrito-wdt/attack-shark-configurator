@@ -1,4 +1,4 @@
-//! Tauri shell around `x3-core`.
+//! Tauri shell around `shark-core`.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 

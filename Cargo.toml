@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/x3-core", "src-tauri"]
+members = ["crates/shark-core", "src-tauri"]
 
 [profile.release]
 lto = "thin"

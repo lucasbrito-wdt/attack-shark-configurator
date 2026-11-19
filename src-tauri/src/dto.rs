@@ -2,8 +2,8 @@
 
 use crate::error::{ApiError, ApiResult};
 use serde::{Deserialize, Serialize};
-use x3_core::model::Capabilities;
-use x3_core::profile::{self, ACTION_MACRO, ACTION_SHORTCUT, BUTTON_COUNT, DPI_STAGES, Macro, MacroEvent, Profile};
+use shark_core::model::Capabilities;
+use shark_core::profile::{self, ACTION_MACRO, ACTION_SHORTCUT, BUTTON_COUNT, DPI_STAGES, Macro, MacroEvent, Profile};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "lowercase")]
@@ -34,7 +34,7 @@ pub struct Battery {
     /// Why `level` is `None` although connected: `"not-reported-over-ble"`.
     pub reason: Option<&'static str>,
     /// Last accepted vendor reading of this model; kept across disconnects and restarts.
-    pub last_known: Option<x3_core::storage::LastBattery>,
+    pub last_known: Option<shark_core::storage::LastBattery>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -303,7 +303,7 @@ pub struct Snapshot {
     /// Groups skipped by the last apply (unverified DPI) that the device has not received yet.
     pub pending_groups: Vec<SkippedGroup>,
     /// Stored verdict of the DPI encoding check for this model, `None` before any check.
-    pub dpi_encoding: Option<x3_core::storage::DpiEncoding>,
+    pub dpi_encoding: Option<shark_core::storage::DpiEncoding>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -345,7 +345,7 @@ pub struct DpiStageChanged {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DeviceEventRaw {
-    /// Debug text of the parsed event; only emitted with `X3_LOG_EVENTS=1`.
+    /// Debug text of the parsed event; only emitted with `SHARK_LOG_EVENTS=1`.
     pub event: String,
 }
 
@@ -437,7 +437,7 @@ pub fn profile_dto(p: &Profile, id: usize, library: &[Macro], caps: &Capabilitie
             .buttons
             .iter()
             .enumerate()
-            .map(|(button, b)| ButtonBinding { button, action: action_ref(b, library), label: x3_core::protocol::actions::label(b) })
+            .map(|(button, b)| ButtonBinding { button, action: action_ref(b, library), label: shark_core::protocol::actions::label(b) })
             .collect(),
     }
 }

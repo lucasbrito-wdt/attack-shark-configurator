@@ -2,20 +2,20 @@
 //! read requests (which stage data for GetFeature) and BLE notification subscriptions.
 //!
 //! ```text
-//! cargo run -p x3-core --bin x3-probe                 # list matching HID interfaces
-//! cargo run -p x3-core --bin x3-probe -- --read       # + firmware version and 0x04 read-back (USB)
-//! cargo run -p x3-core --bin x3-probe -- --listen 10  # + print input reports / BLE notifications for 10 s
+//! cargo run -p shark-core --bin shark-probe                 # list matching HID interfaces
+//! cargo run -p shark-core --bin shark-probe -- --read       # + firmware version and 0x04 read-back (USB)
+//! cargo run -p shark-core --bin shark-probe -- --listen 10  # + print input reports / BLE notifications for 10 s
 //! ```
 
 use hidapi::{DeviceInfo, HidApi, HidDevice};
 use std::sync::Arc;
 use std::thread;
 use std::time::{Duration, Instant};
-use x3_core::device::manager::{DeviceManager, DeviceMsg};
-use x3_core::platform::bk::frame::{self, CMD_BULK, CMD_READ, CMD_VERSION};
-use x3_core::platform::{self, ModelSpec};
-use x3_core::protocol::CMD_SENSOR;
-use x3_core::protocol::events::force_event_log;
+use shark_core::device::manager::{DeviceManager, DeviceMsg};
+use shark_core::platform::bk::frame::{self, CMD_BULK, CMD_READ, CMD_VERSION};
+use shark_core::platform::{self, ModelSpec};
+use shark_core::protocol::CMD_SENSOR;
+use shark_core::protocol::events::force_event_log;
 
 const READ_TRIES: usize = 10;
 const READ_DELAY: Duration = Duration::from_millis(100);
@@ -197,7 +197,7 @@ fn main() {
             if !e.is_empty() {
                 eprintln!("{e}");
             }
-            eprintln!("usage: x3-probe [--read] [--listen <seconds>]");
+            eprintln!("usage: shark-probe [--read] [--listen <seconds>]");
             std::process::exit(2);
         }
     };

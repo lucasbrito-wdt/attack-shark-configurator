@@ -9,7 +9,7 @@ use tauri::image::Image;
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Manager};
-use x3_core::storage::{BatteryLink, LastBattery};
+use shark_core::storage::{BatteryLink, LastBattery};
 
 const TRAY_ID: &str = "battery";
 pub const LOW_LEVEL: u8 = 20;
@@ -51,7 +51,7 @@ impl Known {
     }
 }
 
-/// Inverse of `x3_core::storage::utc_rfc3339` (`YYYY-MM-DDTHH:MM:SSZ`, UTC only).
+/// Inverse of `shark_core::storage::utc_rfc3339` (`YYYY-MM-DDTHH:MM:SSZ`, UTC only).
 pub fn parse_rfc3339_utc(s: &str) -> Option<SystemTime> {
     let b = s.as_bytes();
     if b.len() != 20 || !s.is_ascii() || b[4] != b'-' || b[7] != b'-' || b[10] != b'T' || b[13] != b':' || b[16] != b':' || b[19] != b'Z' {
@@ -120,6 +120,8 @@ pub fn age_text(age: Duration, loc: Locale) -> String {
     fill(tr(loc, key), &[("n", &n.to_string())])
 }
 
+// only the macOS menu bar shows a title next to the icon
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 pub fn title(v: &View, loc: Locale) -> String {
     if let Some(l) = v.live() {
         let low = if l <= LOW_LEVEL && !v.charging { "!" } else { "" };

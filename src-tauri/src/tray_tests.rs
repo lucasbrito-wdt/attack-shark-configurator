@@ -158,7 +158,7 @@ fn age_buckets() {
 #[test]
 fn rfc3339_roundtrips_with_core_formatter() {
     let t = SystemTime::UNIX_EPOCH + Duration::from_secs(1_795_097_000);
-    assert_eq!(parse_rfc3339_utc(&x3_core::storage::utc_rfc3339(t)), Some(t));
+    assert_eq!(parse_rfc3339_utc(&shark_core::storage::utc_rfc3339(t)), Some(t));
     assert_eq!(parse_rfc3339_utc("garbage"), None);
     assert_eq!(parse_rfc3339_utc("2026-13-01T00:00:00Z"), None);
 }

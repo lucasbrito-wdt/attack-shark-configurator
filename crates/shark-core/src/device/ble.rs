@@ -90,7 +90,7 @@ pub struct Exposed {
     pub battery_level: bool,
 }
 
-/// Selection rule of the original app: no name filter, a peripheral is the X3 when it exposes
+/// Selection rule of the original app: no name filter, a peripheral is the mouse when it exposes
 /// both FEE3 (write) and FEE4 (notify). Pure over the characteristic UUID list.
 pub fn select_characteristics(uuids: &[Uuid]) -> Option<Exposed> {
     let has = |short: u16| uuids.contains(&uuid_from_u16(short));

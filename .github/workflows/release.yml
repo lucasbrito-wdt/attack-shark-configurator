@@ -21,6 +21,9 @@ jobs:
           - platform: ubuntu-22.04
             args: ""
             rust_targets: ""
+          - platform: windows-latest
+            args: ""
+            rust_targets: ""
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
@@ -42,7 +45,7 @@ jobs:
       - uses: swatinem/rust-cache@v2
         with:
           workspaces: ". -> target"
-          key: ${{ matrix.args }}
+          key: ${{ matrix.platform }}-${{ matrix.args }}
 
       - name: Install UI dependencies
         run: bun install --frozen-lockfile
@@ -57,7 +60,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: "ATTACK SHARK X3 ${{ github.ref_name }}"
+          releaseName: "ATTACK SHARK Configurator ${{ github.ref_name }}"
           releaseDraft: true
           includeUpdaterJson: true
           args: ${{ matrix.args }}

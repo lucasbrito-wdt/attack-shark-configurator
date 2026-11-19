@@ -178,3 +178,15 @@ fn settings_follow_the_codecs() {
     let caps = by_id("r3-v4-legacy").unwrap().capabilities();
     assert!(!caps.supports_angle_snap && caps.debounce.is_none() && caps.sleep_minutes.is_none());
 }
+
+#[test]
+fn udev_rule_covers_every_usb_id() {
+    // Linux users without the rule cannot open the hidraw node of a model the app supports
+    let rule = include_str!("../../../../packaging/linux/99-attack-shark.rules").to_lowercase();
+    let missing: Vec<String> = usb_ids()
+        .iter()
+        .map(|(v, p, _)| format!("attrs{{idvendor}}==\"{v:04x}\", attrs{{idproduct}}==\"{p:04x}\""))
+        .filter(|line| !rule.contains(line))
+        .collect();
+    assert!(missing.is_empty(), "add to packaging/linux/99-attack-shark.rules: {missing:#?}");
+}

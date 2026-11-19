@@ -1,12 +1,12 @@
 [package]
-name = "x3-core"
+name = "shark-core"
 version = "0.1.0"
 edition = "2024"
-description = "Protocol, device layer, profile and storage for the ATTACK SHARK X3 mouse"
-license = "MIT"
+description = "Protocol, device layer, profile and storage for ATTACK SHARK mice"
+license = "GPL-3.0-only"
 
 [lib]
-name = "x3_core"
+name = "shark_core"
 path = "src/lib.rs"
 
 [features]
@@ -25,5 +25,8 @@ uuid = { version = "1", optional = true }
 [target.'cfg(target_os = "macos")'.dependencies]
 hidapi = "2.6"
 
-[target.'cfg(not(target_os = "macos"))'.dependencies]
+[target.'cfg(target_os = "linux")'.dependencies]
 hidapi = { version = "2.6", default-features = false, features = ["linux-native"] }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+hidapi = { version = "2.6", default-features = false, features = ["windows-native"] }

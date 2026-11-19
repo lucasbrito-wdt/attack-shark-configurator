@@ -6,8 +6,8 @@ use std::sync::{Arc, Mutex, PoisonError};
 use tauri::Manager;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
-use x3_core::device::manager::DeviceManager;
-use x3_core::storage;
+use shark_core::device::manager::DeviceManager;
+use shark_core::storage;
 
 pub struct AppState(Mutex<Inner>);
 

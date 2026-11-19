@@ -3,7 +3,7 @@
 import { reactive } from "vue";
 import { isTauri } from "../api/client";
 
-export const RELEASES_URL = "https://github.com/lucasbrito-wdt/attack-shark-x3/releases";
+export const RELEASES_URL = "https://github.com/lucasbrito-wdt/attack-shark-configurator/releases";
 
 /** The webview does not open target=_blank links; the opener capability allows only this releases URL. */
 export async function openReleases(): Promise<void> {

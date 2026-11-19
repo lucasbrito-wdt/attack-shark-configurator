@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build and install ATTACK SHARK X3 for the current user (macOS or Linux) via `cargo tauri build`.
+# Build and install ATTACK SHARK Configurator for the current user (macOS or Linux) via `cargo tauri build`.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -53,16 +53,16 @@ Linux)
         [ -n "$APPIMAGE" ] || { echo "No .deb or AppImage produced under $BUNDLE_DIR" >&2; exit 1; }
         BIN_DIR="$HOME/.local/bin"
         mkdir -p "$BIN_DIR"
-        install -m 755 "$APPIMAGE" "$BIN_DIR/attack-shark-x3.AppImage"
-        echo "Installed $BIN_DIR/attack-shark-x3.AppImage"
+        install -m 755 "$APPIMAGE" "$BIN_DIR/attack-shark-configurator.AppImage"
+        echo "Installed $BIN_DIR/attack-shark-configurator.AppImage"
         echo
         echo "Next, using sudo, this script will:"
-        echo "  - copy packaging/linux/99-attack-shark-x3.rules to /etc/udev/rules.d/"
+        echo "  - copy packaging/linux/99-attack-shark.rules to /etc/udev/rules.d/"
         echo "  - run: udevadm control --reload-rules && udevadm trigger"
         echo "The rule lets your user open the mouse hidraw devices (TAG uaccess, MODE 0660)."
         read -r -p "Continue? [y/N] " answer
         if [[ "$answer" =~ ^[Yy]$ ]]; then
-            sudo install -m 644 packaging/linux/99-attack-shark-x3.rules /etc/udev/rules.d/99-attack-shark-x3.rules
+            sudo install -m 644 packaging/linux/99-attack-shark.rules /etc/udev/rules.d/99-attack-shark.rules
             sudo udevadm control --reload-rules
             sudo udevadm trigger
             echo "udev rule installed. Replug the mouse or dongle if it was already connected."

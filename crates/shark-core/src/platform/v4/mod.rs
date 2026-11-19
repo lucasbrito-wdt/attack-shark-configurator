@@ -5,7 +5,7 @@
 //! and speed/brightness ranges unclear), button remap and macros (the whole key matrix must be rewritten with
 //! unknown reserved slots), lift-off (silent height unit), sleep timers (unit), pairing (no command), battery
 //! (no command on USB, no charge flag on 2.4G), the 2.4G dongle relay, Bluetooth, and the Pan1080 option param 0.
-//! DPI is `verified: false`: the wire unit is not stated, so writes need `X3_ALLOW_UNVERIFIED=1`.
+//! DPI is `verified: false`: the wire unit is not stated, so writes need `SHARK_ALLOW_UNVERIFIED=1`.
 
 pub mod codec;
 pub mod registry;

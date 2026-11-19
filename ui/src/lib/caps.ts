@@ -1,4 +1,4 @@
-// Helpers over the multi-model Capabilities (crates/x3-core ModelSpec): DPI stepping, slider mapping, button order.
+// Helpers over the multi-model Capabilities (crates/shark-core ModelSpec): DPI stepping, slider mapping, button order.
 
 import type { ApiError, ButtonInfo, Capabilities } from "../api/client";
 

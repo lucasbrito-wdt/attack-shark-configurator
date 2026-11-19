@@ -48,7 +48,7 @@ pub struct Capabilities {
     pub dpi_high_step_from: Option<u32>,
     /// `a | t | h | direct`
     pub dpi_encoding: &'static str,
-    /// False: DPI writes are refused unless `X3_ALLOW_UNVERIFIED=1`.
+    /// False: DPI writes are refused unless `SHARK_ALLOW_UNVERIFIED=1`.
     pub dpi_verified: bool,
     /// Hz.
     pub polling_rates: Vec<u16>,

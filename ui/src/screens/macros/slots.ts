@@ -1,4 +1,4 @@
-// Slot math of the 0x09 macro packet (crates/x3-core/src/protocol/macros.rs): a pause after an event longer than
+// Slot math of the 0x09 macro packet (crates/shark-core/src/protocol/macros.rs): a pause after an event longer than
 // 1270 ms is sent as up to 10 filler events of 200 ms plus the remainder, and the packet holds maxMacroEvents pairs.
 import type { MacroEvent } from "../../api/client";
 

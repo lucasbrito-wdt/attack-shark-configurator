@@ -2,8 +2,8 @@
 //! Service (0x2A19) fills in when the vendor level is missing or discarded.
 
 use super::*;
-use x3_core::platform::battery::ChargeRule;
-use x3_core::storage::{BatteryLink, LastBattery};
+use shark_core::platform::battery::ChargeRule;
+use shark_core::storage::{BatteryLink, LastBattery};
 
 impl Inner {
     /// The first four BK pages send a bogus vendor battery over BLE (family-b 4.4).

@@ -93,9 +93,9 @@ pub async fn delete_macro(app: AppHandle, state: S<'_>, id: usize) -> ApiResult<
 #[tauri::command]
 pub async fn read_back(app: AppHandle, state: S<'_>) -> ApiResult<ReadBackDto> {
     let spec = state.with(&app, |i| i.begin_read())?;
-    let result = tauri::async_runtime::spawn_blocking(move || x3_core::device::hid::read_back(spec))
+    let result = tauri::async_runtime::spawn_blocking(move || shark_core::device::hid::read_back(spec))
         .await
-        .unwrap_or_else(|e| Err(x3_core::platform::ReadError::Io(format!("read-back task failed: {e}"))));
+        .unwrap_or_else(|e| Err(shark_core::platform::ReadError::Io(format!("read-back task failed: {e}"))));
     state.with(&app, |i| i.end_read(result))
 }
 
@@ -110,9 +110,9 @@ async fn verify_dpi(app: &AppHandle, state: &AppState) -> ApiResult<DpiVerificat
         Ok(spec) => spec,
         Err(done) => return Ok(done),
     };
-    let result = tauri::async_runtime::spawn_blocking(move || x3_core::device::hid::verify_dpi(spec))
+    let result = tauri::async_runtime::spawn_blocking(move || shark_core::device::hid::verify_dpi(spec))
         .await
-        .unwrap_or_else(|e| Err(x3_core::platform::ReadError::Io(format!("DPI check task failed: {e}"))));
+        .unwrap_or_else(|e| Err(shark_core::platform::ReadError::Io(format!("DPI check task failed: {e}"))));
     Ok(state.with(app, |i| i.end_verify(spec, result)))
 }
 

@@ -2,7 +2,7 @@
 
 use super::*;
 use serde_json::json;
-use x3_core::profile::Macro;
+use shark_core::profile::Macro;
 
 fn keys<T: Serialize>(v: &T) -> Vec<String> {
     let mut k: Vec<String> = serde_json::to_value(v).unwrap().as_object().unwrap().keys().cloned().collect();
@@ -26,7 +26,7 @@ fn status_and_battery_keys() {
     assert_eq!(keys(&status), ["awake", "battery", "connected", "mode", "model"]);
     let v = serde_json::to_value(&status).unwrap();
     assert_eq!(v["battery"], json!({"level": null, "charging": null, "source": "none", "reason": "not-reported-over-ble", "lastKnown": null}));
-    let last = x3_core::storage::LastBattery { level: 80, charging: true, link: x3_core::storage::BatteryLink::Usb, at: "2026-11-19T14:03:07Z".into() };
+    let last = shark_core::storage::LastBattery { level: 80, charging: true, link: shark_core::storage::BatteryLink::Usb, at: "2026-11-19T14:03:07Z".into() };
     let b = Battery { level: Some(80), charging: Some(true), source: BatterySource::VendorEvent, reason: None, last_known: Some(last) };
     assert_eq!(
         serde_json::to_value(&b).unwrap(),
@@ -39,7 +39,7 @@ fn status_and_battery_keys() {
 
 #[test]
 fn profile_keys() {
-    let p = profile_dto(&Profile::default(), 0, &[], &x3_core::platform::default_model().capabilities());
+    let p = profile_dto(&Profile::default(), 0, &[], &shark_core::platform::default_model().capabilities());
     assert_eq!(
         keys(&p),
         [
@@ -91,7 +91,7 @@ fn event_payload_keys() {
     let ev = DpiVerificationEvent { state: "done", result: Some(DpiVerification { status: VerificationStatus::Verified, format: Some("a".into()), reason: None }) };
     assert_eq!(serde_json::to_value(&ev).unwrap(), json!({"state": "done", "result": {"status": "verified", "format": "a"}}));
     assert_eq!(serde_json::to_value(DpiVerificationEvent { state: "running", result: None }).unwrap(), json!({"state": "running"}));
-    let stored = x3_core::storage::DpiEncoding { verified: true, format: Some("a".into()), at: "2026-11-19T14:03:07Z".into(), firmware: Some(0x1003) };
+    let stored = shark_core::storage::DpiEncoding { verified: true, format: Some("a".into()), at: "2026-11-19T14:03:07Z".into(), firmware: Some(0x1003) };
     assert_eq!(keys(&stored), ["at", "firmware", "format", "verified"]);
 }
 
@@ -106,7 +106,7 @@ fn catalog_and_snapshot_keys() {
 
 #[test]
 fn patch_is_partial_and_validated() {
-    let caps = x3_core::platform::default_model().capabilities();
+    let caps = shark_core::platform::default_model().capabilities();
     let patch: SettingsPatch = serde_json::from_value(json!({
         "polling": 500, "lod": 2, "dpiStages": [{"index": 1, "dpi": 1600, "color": "#00FF00"}], "lighting": {"mode": 1}
     }))
@@ -128,7 +128,7 @@ fn patch_is_partial_and_validated() {
 
 #[test]
 fn dpi_patch_uses_the_model_grid() {
-    let caps = x3_core::platform::by_id("x3-max").unwrap().capabilities();
+    let caps = shark_core::platform::by_id("x3-max").unwrap().capabilities();
     let stage = |dpi| SettingsPatch { dpi_stages: Some(vec![DpiStagePatch { index: 0, dpi: Some(dpi), enabled: None, color: None }]), ..Default::default() };
     let mut p = Profile::default();
     apply_patch(&mut p, &stage(30_100), &caps).unwrap();
@@ -147,7 +147,7 @@ fn set_action_kinds() {
     set_action(&mut p, 6, &ActionRef::Shortcut { key: 0x06, mods: 1 }, &[]).unwrap();
     assert_eq!((p.buttons[6].action_id, p.buttons[6].shortcut_key), (ACTION_SHORTCUT, 6));
     set_action(&mut p, 2, &ActionRef::Macro { macro_id: Some(0), name: None }, &lib()).unwrap();
-    assert_eq!(profile_dto(&p, 0, &lib(), &x3_core::platform::default_model().capabilities()).buttons[2].action, ActionRef::Macro { macro_id: Some(0), name: Some("M".into()) });
+    assert_eq!(profile_dto(&p, 0, &lib(), &shark_core::platform::default_model().capabilities()).buttons[2].action, ActionRef::Macro { macro_id: Some(0), name: Some("M".into()) });
     assert!(set_action(&mut p, 2, &ActionRef::Macro { macro_id: Some(9), name: None }, &lib()).is_err());
     assert!(set_action(&mut p, 18, &ActionRef::Preset { id: 1 }, &[]).is_err());
     assert!(set_action(&mut p, 0, &ActionRef::Preset { id: ACTION_MACRO }, &[]).is_err());
@@ -155,7 +155,7 @@ fn set_action_kinds() {
 
 #[test]
 fn settings_follow_the_model() {
-    let caps = |id: &str| x3_core::platform::by_id(id).unwrap().capabilities();
+    let caps = |id: &str| shark_core::platform::by_id(id).unwrap().capabilities();
     let r1 = profile_dto(&Profile::default(), 0, &[], &caps("r1"));
     assert_eq!((r1.angle_snap, r1.ripple_control, r1.motion_sync, r1.debounce), (Some(false), Some(false), None, Some(4)));
     let r6 = serde_json::to_value(profile_dto(&Profile::default(), 0, &[], &caps("r6"))).unwrap();
@@ -179,8 +179,8 @@ fn settings_follow_the_model() {
 
 #[test]
 fn read_back_shape() {
-    use x3_core::platform::ReadBack;
-    let caps = x3_core::platform::by_id("r1").unwrap().capabilities();
+    use shark_core::platform::ReadBack;
+    let caps = shark_core::platform::by_id("r1").unwrap().capabilities();
     let mut r = ReadBack { polling_index: Some(3), lift_off: Some(0), light_color: Some([0, 0, 255]), ..ReadBack::default() };
     r.dpi_units[0] = Some(250);
     let dto = crate::state::read::read_back_dto(&r, &caps);

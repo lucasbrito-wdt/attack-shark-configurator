@@ -38,7 +38,7 @@ const fn model(id: &'static str, name: &'static str, wired: u16, dongle: u16) ->
             stages: 6,
             encoding: "direct",
             // unverified: the doc does not say whether the BE16 on the wire is the DPI or the slider unit
-            // (family-e 3.3 "X and Y are BE16", "DPI = value*50"); sent only with X3_ALLOW_UNVERIFIED=1
+            // (family-e 3.3 "X and Y are BE16", "DPI = value*50"); sent only with SHARK_ALLOW_UNVERIFIED=1
             verified: false,
         },
         // wired is capped at 1000 Hz on the device (family-e section 4); the spec has one list per model

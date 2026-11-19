@@ -75,7 +75,7 @@ pub fn parse_input_report(data: &[u8]) -> Option<Event> {
     parse_pair(u16::from_le_bytes([t0, t1]), u16::from_le_bytes([v0, v1]))
 }
 
-/// Debug aid: with `X3_LOG_EVENTS=1` every raw input report and BLE notification goes to stderr.
+/// Debug aid: with `SHARK_LOG_EVENTS=1` every raw input report and BLE notification goes to stderr.
 pub fn log_event_bytes(source: &str, bytes: &[u8]) {
     if log_enabled() {
         let hex: Vec<String> = bytes.iter().map(|b| format!("{b:02X}")).collect();
@@ -85,7 +85,7 @@ pub fn log_event_bytes(source: &str, bytes: &[u8]) {
 
 static FORCED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
-/// Turn on the raw event log regardless of `X3_LOG_EVENTS` (used by `x3-probe`).
+/// Turn on the raw event log regardless of `SHARK_LOG_EVENTS` (used by `shark-probe`).
 pub fn force_event_log() {
     FORCED.store(true, std::sync::atomic::Ordering::Relaxed);
 }
@@ -93,10 +93,10 @@ pub fn force_event_log() {
 fn log_enabled() -> bool {
     use std::sync::OnceLock;
     static ON: OnceLock<bool> = OnceLock::new();
-    FORCED.load(std::sync::atomic::Ordering::Relaxed) || *ON.get_or_init(|| std::env::var_os("X3_LOG_EVENTS").is_some())
+    FORCED.load(std::sync::atomic::Ordering::Relaxed) || *ON.get_or_init(|| std::env::var_os("SHARK_LOG_EVENTS").is_some())
 }
 
-/// Free-form diagnostic line, printed only with `X3_LOG_EVENTS=1`.
+/// Free-form diagnostic line, printed only with `SHARK_LOG_EVENTS=1`.
 pub fn log_line(msg: &str) {
     if log_enabled() {
         eprintln!("{msg}");

@@ -1,6 +1,6 @@
 use super::*;
 use std::sync::{Arc, Mutex};
-use x3_core::device::manager::DeviceMsg;
+use shark_core::device::manager::DeviceMsg;
 
 type Sent = Arc<Mutex<Vec<Vec<Vec<u8>>>>>;
 
@@ -8,14 +8,14 @@ fn inner() -> (Inner, Sent) {
     let sent: Sent = Arc::default();
     let sink = sent.clone();
     let mut i = Inner::new(Store::default(), None, LinkState::default(), Box::new(move |p| sink.lock().unwrap().push(p)));
-    // the default X6 has an unverified DPI encoding; apply tests opt in like X3_ALLOW_UNVERIFIED=1
+    // the default X6 has an unverified DPI encoding; apply tests opt in like SHARK_ALLOW_UNVERIFIED=1
     i.allow_unverified = true;
     (i, sent)
 }
 
 /// A link whose model was detected as `id` (USB detection precedes `LinkUp`).
 fn connect_as(i: &mut Inner, kind: LinkKind, id: &str) {
-    i.on_msg(DeviceMsg::Detected(x3_core::platform::by_id(id).unwrap()));
+    i.on_msg(DeviceMsg::Detected(shark_core::platform::by_id(id).unwrap()));
     i.on_msg(DeviceMsg::LinkUp(kind));
 }
 
@@ -52,7 +52,7 @@ fn ble_battery_is_discarded_for_the_first_four_pages() {
     let b = i.status().battery;
     assert_eq!((b.level, b.charging, b.source, b.reason), (None, None, BatterySource::None, Some("not-reported-over-ble")));
     assert!(i.status().awake);
-    i.on_msg(DeviceMsg::Detected(x3_core::platform::by_id("x3-max").unwrap()));
+    i.on_msg(DeviceMsg::Detected(shark_core::platform::by_id("x3-max").unwrap()));
     i.on_msg(hb(LinkKind::Ble, 0, 40));
     let b = i.status().battery;
     assert_eq!((b.level, b.charging, b.reason), (Some(40), None, None), "state 0 is not decoded");
@@ -70,7 +70,7 @@ fn ble_battery_service_fills_in_when_the_vendor_level_is_discarded() {
     let b = i.status().battery;
     assert_eq!((b.level, b.charging, b.source, b.reason), (Some(80), None, BatterySource::BleBas, None));
     let last = b.last_known.expect("BAS updates lastKnown");
-    assert_eq!((last.level, last.link), (80, x3_core::storage::BatteryLink::Ble));
+    assert_eq!((last.level, last.link), (80, shark_core::storage::BatteryLink::Ble));
     i.on_msg(bas(101));
     let b = i.status().battery;
     assert_eq!((b.level, b.charging, b.source), (Some(80), None, BatterySource::BleBas), "101 is not a level");
@@ -99,7 +99,7 @@ fn last_known_battery_survives_link_drops_and_restarts() {
     connect(&mut i, LinkKind::Dongle);
     i.on_msg(hb(LinkKind::Dongle, 1, 7));
     let last = i.status().battery.last_known.expect("set by the vendor event");
-    assert_eq!((last.level, last.charging, last.link), (70, false, x3_core::storage::BatteryLink::Dongle));
+    assert_eq!((last.level, last.charging, last.link), (70, false, shark_core::storage::BatteryLink::Dongle));
     assert!(last.at.ends_with('Z') && last.at.len() == 20, "{}", last.at);
     i.on_msg(DeviceMsg::LinkDown(LinkKind::Dongle));
     connect(&mut i, LinkKind::Ble);
@@ -131,7 +131,7 @@ fn detection_switches_capabilities_and_persists_the_model() {
     let (mut i, _) = inner();
     assert_eq!(i.caps.model_id, "x6");
     connect(&mut i, LinkKind::Dongle);
-    i.on_msg(DeviceMsg::Detected(x3_core::platform::by_id("f1").unwrap()));
+    i.on_msg(DeviceMsg::Detected(shark_core::platform::by_id("f1").unwrap()));
     assert_eq!((i.caps.model_id, i.store.model.as_deref()), ("f1", Some("f1")));
     i.on_msg(hb(LinkKind::Dongle, 3, 80));
     assert_eq!((i.status().battery.level, i.status().battery.charging), (Some(80), Some(true)));
@@ -141,7 +141,7 @@ fn detection_switches_capabilities_and_persists_the_model() {
 
 #[test]
 fn unverified_dpi_skips_only_the_dpi_group() {
-    use x3_core::protocol::{CMD_POLLING, CMD_SENSOR};
+    use shark_core::protocol::{CMD_POLLING, CMD_SENSOR};
     let dpi_skipped = vec![SkippedGroup { group: "dpi", code: "unverified_encoding" }];
     let (mut i, sent) = inner();
     i.allow_unverified = false;
@@ -180,7 +180,7 @@ fn apply_waits_for_the_model_to_be_identified() {
     let (mut i, sent) = inner();
     i.on_msg(DeviceMsg::LinkUp(LinkKind::Wired));
     assert_eq!(i.apply(false, true).unwrap_err().code, "unsupported_model", "e.g. a V4 shared PID before 0x8F answers");
-    i.on_msg(DeviceMsg::Detected(x3_core::platform::by_id("x6").unwrap()));
+    i.on_msg(DeviceMsg::Detected(shark_core::platform::by_id("x6").unwrap()));
     let r = i.apply(false, true).unwrap();
     assert_eq!((r.status, sent.lock().unwrap().len()), (ApplyStatus::Queued, 1));
     i.on_msg(DeviceMsg::SendDone { sent: r.packets, skipped: 0, failed: 0 });
@@ -192,7 +192,7 @@ fn apply_waits_for_the_model_to_be_identified() {
 #[test]
 fn polling_rates_follow_the_link_cap() {
     let (mut i, _) = inner();
-    let r6 = x3_core::platform::models().find(|m| m.platform == x3_core::platform::Platform::Xvi).unwrap();
+    let r6 = shark_core::platform::models().find(|m| m.platform == shark_core::platform::Platform::Xvi).unwrap();
     i.on_msg(DeviceMsg::Detected(r6));
     i.on_msg(DeviceMsg::LinkUp(LinkKind::Dongle));
     assert_eq!(i.caps.polling_rates.last(), r6.polling_rates.last());
@@ -263,7 +263,7 @@ fn reset_requires_confirmation_and_sends_resync_only_then() {
     assert_eq!(i.reset_profile(0, false).unwrap_err().code, "confirm_required");
     assert!(sent.lock().unwrap().is_empty());
     i.reset_profile(0, true).unwrap();
-    assert_eq!(sent.lock().unwrap()[0][0][0], x3_core::protocol::CMD_RESYNC);
+    assert_eq!(sent.lock().unwrap()[0][0][0], shark_core::protocol::CMD_RESYNC);
 }
 
 #[test]
@@ -290,7 +290,7 @@ fn snapshot_keys() {
 
 #[test]
 fn read_back_needs_usb_and_holds_applies_until_it_ends() {
-    use x3_core::platform::{ReadBack, ReadError};
+    use shark_core::platform::{ReadBack, ReadError};
     let (mut i, sent) = inner();
     connect_as(&mut i, LinkKind::Ble, "r1");
     assert_eq!(i.begin_read().unwrap_err().code, "unsupported", "BLE only");
@@ -310,8 +310,8 @@ fn read_back_needs_usb_and_holds_applies_until_it_ends() {
     assert_eq!(i.end_read(Ok(ReadBack { polling_index: Some(0), ..ReadBack::default() })).unwrap().polling, Some(125));
 }
 
-fn verdict(format: Option<&'static str>) -> Result<x3_core::platform::DpiVerdict, x3_core::platform::ReadError> {
-    Ok(x3_core::platform::DpiVerdict { format, firmware: Some(0x1003), reason: Some("evidence".into()) })
+fn verdict(format: Option<&'static str>) -> Result<shark_core::platform::DpiVerdict, shark_core::platform::ReadError> {
+    Ok(shark_core::platform::DpiVerdict { format, firmware: Some(0x1003), reason: Some("evidence".into()) })
 }
 
 #[test]
@@ -356,7 +356,7 @@ fn a_verified_dpi_encoding_enables_dpi_writes() {
     let stored = snap.dpi_encoding.expect("persisted");
     assert_eq!((stored.verified, stored.format.as_deref(), stored.firmware), (true, Some("a"), Some(0x1003)));
     let first = sent.lock().unwrap()[0].clone();
-    assert!(first.iter().any(|p| p[0] == x3_core::protocol::CMD_SENSOR), "the deferred apply includes the DPI");
+    assert!(first.iter().any(|p| p[0] == shark_core::protocol::CMD_SENSOR), "the deferred apply includes the DPI");
 }
 
 #[test]
@@ -365,7 +365,7 @@ fn other_dpi_check_outcomes_keep_dpi_writes_off() {
     i.allow_unverified = false;
     connect(&mut i, LinkKind::Wired);
     let spec = i.begin_verify().unwrap().unwrap();
-    let r = i.end_verify(spec, Err(x3_core::platform::ReadError::Timeout("not ready".into())));
+    let r = i.end_verify(spec, Err(shark_core::platform::ReadError::Timeout("not ready".into())));
     assert_eq!(r.status, VerificationStatus::Timeout);
     assert!(i.snapshot().dpi_encoding.is_none(), "link errors are not verdicts");
     let spec = i.begin_verify().unwrap().unwrap();

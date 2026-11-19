@@ -90,7 +90,7 @@ impl DeviceManager {
         let hid_shared = shared.clone();
         thread::spawn(move || discovery_loop(&hid_shared));
         #[cfg(feature = "ble")]
-        if std::env::var_os("X3_NO_BLE").is_none() {
+        if std::env::var_os("SHARK_NO_BLE").is_none() {
             super::ble::spawn(shared.clone());
         }
         Self { shared, messages: msg_rx }
@@ -204,7 +204,7 @@ fn close_link(shared: &Shared, kind: LinkKind, open: &mut HashMap<LinkKind, Open
 /// `(pid, codec, bind)`: with `bind`, the first input report picks the model (shared receiver rule).
 fn spawn_reader(shared: Shared, kind: LinkKind, devices: Vec<HidDevice>, stop: Arc<AtomicBool>, link: (u16, &'static dyn PlatformCodec, bool)) {
     let (pid, codec, mut bind) = link;
-    let log_raw = std::env::var_os("X3_LOG_RAW").is_some();
+    let log_raw = std::env::var_os("SHARK_LOG_RAW").is_some();
     thread::spawn(move || {
         if devices.is_empty() {
             return;

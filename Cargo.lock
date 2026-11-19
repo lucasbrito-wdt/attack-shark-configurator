@@ -220,11 +220,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
-name = "attack-shark-x3"
+name = "attack-shark-configurator"
 version = "0.1.0"
 dependencies = [
  "serde",
  "serde_json",
+ "shark-core",
  "sys-locale",
  "tauri",
  "tauri-build",
@@ -234,7 +235,6 @@ dependencies = [
  "tauri-plugin-updater",
  "tiny-skia",
  "window-vibrancy 0.6.0",
- "x3-core",
 ]
 
 [[package]]
@@ -3789,6 +3789,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "shark-core"
+version = "0.1.0"
+dependencies = [
+ "btleplug",
+ "directories",
+ "futures",
+ "hidapi",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "shlex"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5786,20 +5800,6 @@ dependencies = [
  "libc",
  "once_cell",
  "pkg-config",
-]
-
-[[package]]
-name = "x3-core"
-version = "0.1.0"
-dependencies = [
- "btleplug",
- "directories",
- "futures",
- "hidapi",
- "serde",
- "serde_json",
- "tokio",
- "uuid",
 ]
 
 [[package]]

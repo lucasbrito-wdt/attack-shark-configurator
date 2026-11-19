@@ -1,5 +1,5 @@
 ---
-title: Plano de design - ATTACK SHARK X3 Configurator
+title: Plano de design - ATTACK SHARK Configurator
 status: proposta em arena (duas direções)
 fonte-de-verdade: docs/PROTOCOL.md (seções 3, 4, 5 e 6)
 ---

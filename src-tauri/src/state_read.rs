@@ -2,7 +2,7 @@
 //! the lock; meanwhile the writer stays idle (applies are deferred like during another apply).
 
 use super::*;
-use x3_core::platform::{ReadBack, ReadError};
+use shark_core::platform::{ReadBack, ReadError};
 
 impl Inner {
     /// Check that a read-back can run now and mark it running. Returns the model to read.

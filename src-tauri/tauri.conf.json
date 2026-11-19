@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "ATTACK SHARK X3",
+  "productName": "ATTACK SHARK Configurator",
   "version": "0.1.0",
-  "identifier": "com.lucasbrito.attack-shark-x3",
+  "identifier": "com.lucasbrito.attack-shark-configurator",
   "build": {
     "frontendDist": "../ui/dist",
     "devUrl": "http://localhost:5173",
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "ATTACK SHARK X3",
+        "title": "ATTACK SHARK Configurator",
         "width": 1180,
         "height": 760,
         "minWidth": 960,
@@ -32,11 +32,11 @@
   "bundle": {
     "active": true,
     "createUpdaterArtifacts": true,
-    "targets": ["app", "dmg", "deb", "appimage"],
+    "targets": ["app", "dmg", "deb", "appimage", "nsis", "msi"],
     "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
     "category": "Utility",
-    "shortDescription": "ATTACK SHARK X3 mouse configurator",
-    "longDescription": "Configure DPI, polling rate, buttons and macros of the ATTACK SHARK X3 mouse.",
+    "shortDescription": "ATTACK SHARK mouse configurator",
+    "longDescription": "Configure DPI, polling rate, lighting, buttons and macros of ATTACK SHARK mice.",
     "macOS": {
       "minimumSystemVersion": "11.0"
     },
@@ -44,7 +44,7 @@
       "deb": {
         "section": "utils",
         "files": {
-          "/etc/udev/rules.d/99-attack-shark-x3.rules": "../packaging/linux/99-attack-shark-x3.rules"
+          "/etc/udev/rules.d/99-attack-shark.rules": "../packaging/linux/99-attack-shark.rules"
         },
         "postInstallScript": "../packaging/linux/deb/postinst"
       }
@@ -53,7 +53,7 @@
   "plugins": {
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEVENTVDMTM5QkM1NDQwMjMKUldRalFGUzhPY0ZWN2ZTVlJ6UmNvVWFsR1g3ZHMyU3gzWjhxREpnVnUzSEo5ZDdHMmJ5TXlKa0sK",
-      "endpoints": ["https://github.com/lucasbrito-wdt/attack-shark-x3/releases/latest/download/latest.json"]
+      "endpoints": ["https://github.com/lucasbrito-wdt/attack-shark-configurator/releases/latest/download/latest.json"]
     }
   }
 }
