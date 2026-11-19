@@ -1,4 +1,4 @@
-# ATTACK SHARK X3 Configurator
+# ATTACK SHARK Configurator
 
 Unofficial open-source configurator for ATTACK SHARK mice (macOS and Linux). Tauri v2 shell over a Rust core, with a
 Vue 3 web UI. The wire protocol is documented in `docs/PROTOCOL.md` (O = observed, I = inferred); the UI/backend
