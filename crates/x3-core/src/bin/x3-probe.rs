@@ -74,7 +74,16 @@ fn list(api: &HidApi) -> Vec<&DeviceInfo> {
 
 /// SetFeature `A0 <id> <len> ..`, wait for GetFeature 0xA0 ready, then GetFeature `id`.
 fn read_back(dev: &HidDevice, id: u8, len: usize) -> Result<Vec<u8>, String> {
-    dev.send_feature_report(&frame::read_request(id, len as u8)).map_err(|e| format!("read request: {e}"))?;
+    // the firmware rejects some SetFeature calls intermittently (0xE0005000): retry a few times
+    let mut sent = dev.send_feature_report(&frame::read_request(id, len as u8));
+    for _ in 0..4 {
+        if sent.is_ok() {
+            break;
+        }
+        thread::sleep(READ_DELAY);
+        sent = dev.send_feature_report(&frame::read_request(id, len as u8));
+    }
+    sent.map_err(|e| format!("read request: {e}"))?;
     let mut ready = false;
     for _ in 0..READ_TRIES {
         thread::sleep(READ_DELAY);
@@ -147,15 +156,21 @@ fn read_device(api: &HidApi, infos: &[&DeviceInfo]) {
             Some(v) => println!("  firmware 0x{v:04X} ({}.{})", v >> 8, v & 0xFF),
             None => println!("  firmware unknown, trying the per-command read"),
         }
-        if version.is_none_or(frame::split_read) {
-            match read_back(&dev, CMD_SENSOR, usize::from(SENSOR_LEN)) {
-                Ok(r) => print_sensor(&r, spec),
-                Err(e) => println!("  0x04: {e}"),
-            }
-        } else {
+        // the split reads are tried even when the firmware would use the bulk read (the bulk one can time out)
+        if version.is_some_and(|v| !frame::split_read(v)) {
             match get_feature(&dev, CMD_BULK, BULK_LEN) {
                 Ok(r) => println!("  0x0A bulk (BLE A0 layout, undecoded): {}", hex(&r)),
                 Err(e) => println!("  0x0A: {e}"),
+            }
+        }
+        match read_back(&dev, CMD_SENSOR, usize::from(SENSOR_LEN)) {
+            Ok(r) => print_sensor(&r, spec),
+            Err(e) => println!("  0x04: {e}"),
+        }
+        for (id, len) in [(0x05u8, 15usize), (0x06, 9), (0x08, 0x3B)] {
+            match read_back(&dev, id, len) {
+                Ok(r) => println!("  0x{id:02X} raw: {}", hex(&r)),
+                Err(e) => println!("  0x{id:02X}: {e}"),
             }
         }
     }

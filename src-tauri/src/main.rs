@@ -61,6 +61,16 @@ fn main() {
             commands::read_back,
             commands::verify_dpi_encoding,
         ])
-        .run(tauri::generate_context!())
-        .expect("error while running the application");
+        .build(tauri::generate_context!())
+        .expect("error while building the application")
+        .run(|_app, _event| {
+            // the close button only hides the window, so a Dock click has to bring it back
+            #[cfg(target_os = "macos")]
+            if let tauri::RunEvent::Reopen { .. } = _event
+                && let Some(window) = _app.get_webview_window("main")
+            {
+                let _ = window.show();
+                let _ = window.set_focus();
+            }
+        });
 }

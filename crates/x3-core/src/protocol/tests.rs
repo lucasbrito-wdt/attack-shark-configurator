@@ -60,10 +60,11 @@ fn button_map_layout_and_checksum() {
     let p = build_buttons(&Profile::default());
     assert_eq!(p.len(), 59);
     assert_eq!(&p[..3], &[0x08, 0x3B, 0x01]);
-    assert_eq!(&p[3..6], &[0x01, 0x01, 0x00]); // button 0: left click
-    assert_eq!(&p[6..9], &[0x01, 0x02, 0x00]); // button 1: right click
-    assert_eq!(&p[9..12], &[0x01, 0x04, 0x00]); // button 2: middle
-    assert_eq!(&p[12..15], &[0, 0, 0]); // button 3: off
+    // official vendor table: type 0x01 is "Button Off", left/right/middle are 0x02/0x03/0x04
+    assert_eq!(&p[3..6], &[0x02, 0x00, 0x00]); // button 0: left click
+    assert_eq!(&p[6..9], &[0x03, 0x00, 0x00]); // button 1: right click
+    assert_eq!(&p[9..12], &[0x04, 0x00, 0x00]); // button 2: middle
+    assert_eq!(&p[12..15], &[0x01, 0x00, 0x00]); // button 3: off
     let sum = checksum16(&p[3..=56]);
     assert_eq!(&p[57..], &[(sum >> 8) as u8, sum as u8]);
 }
@@ -76,7 +77,8 @@ fn button_shortcut_and_macro_encoding() {
     prof.buttons[3].shortcut_key = 0x09;
     prof.buttons[4].action_id = ACTION_MACRO;
     let p = build_buttons(&prof);
-    assert_eq!(&p[12..15], &[0x02, 0x05, 0x09]);
+    assert_eq!(&p[12..15], &[0x11, 0x05, 0x09]);
+    assert_eq!(p[15], 0x12); // macro type
     assert_eq!(p[15 + 2], 5); // macro: b = button index + 1
     assert_eq!(p[15 + 1], 0); // macro: a = 0
 }
