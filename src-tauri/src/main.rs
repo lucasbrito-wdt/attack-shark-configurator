@@ -21,10 +21,13 @@ fn main() {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
         .on_window_event(|window, event| {
-            // closing hides the window so the tray keeps updating; quit via the tray menu or Cmd+Q
+            // closing sends the app to the tray (and off the Dock) so the tray keeps updating;
+            // quit via the tray menu or Cmd+Q
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
                 let _ = window.hide();
+                #[cfg(target_os = "macos")]
+                let _ = window.app_handle().set_dock_visibility(false);
             }
         })
         .setup(|app| {
@@ -64,13 +67,10 @@ fn main() {
         .build(tauri::generate_context!())
         .expect("error while building the application")
         .run(|_app, _event| {
-            // the close button only hides the window, so a Dock click has to bring it back
+            // the close button only hides the window, so opening the app again has to bring it back
             #[cfg(target_os = "macos")]
-            if let tauri::RunEvent::Reopen { .. } = _event
-                && let Some(window) = _app.get_webview_window("main")
-            {
-                let _ = window.show();
-                let _ = window.set_focus();
+            if let tauri::RunEvent::Reopen { .. } = _event {
+                tray::show_window(_app);
             }
         });
 }

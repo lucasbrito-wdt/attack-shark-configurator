@@ -167,7 +167,9 @@ struct TrayState {
     locale: Mutex<Locale>,
 }
 
-fn show_window(app: &AppHandle) {
+pub fn show_window(app: &AppHandle) {
+    #[cfg(target_os = "macos")]
+    let _ = app.set_dock_visibility(true);
     if let Some(w) = app.get_webview_window("main") {
         let _ = w.show();
         let _ = w.unminimize();
