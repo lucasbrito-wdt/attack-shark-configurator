@@ -20,7 +20,8 @@ case "$(uname -s)" in
 Darwin)
     echo "Building the macOS app bundle (cargo tauri build --bundles app)..."
     "$CARGO" tauri build --bundles app --config '{"bundle":{"createUpdaterArtifacts":false}}'
-    APP="$(find "$BUNDLE_DIR/macos" -maxdepth 1 -name '*.app' | head -n 1)"
+    # the newest bundle wins: older ones (e.g. from before a rename) can stay in target/
+    APP="$(ls -td "$BUNDLE_DIR"/macos/*.app 2>/dev/null | head -n 1)"
     [ -n "$APP" ] || { echo "No .app produced under $BUNDLE_DIR/macos" >&2; exit 1; }
     DEST="/Applications"
     [ -w "$DEST" ] || DEST="$HOME/Applications"
@@ -37,7 +38,7 @@ Darwin)
 Linux)
     echo "Building the Linux bundles (cargo tauri build --bundles deb,appimage)..."
     "$CARGO" tauri build --bundles deb,appimage --config '{"bundle":{"createUpdaterArtifacts":false}}'
-    DEB="$(find "$BUNDLE_DIR/deb" -maxdepth 1 -name '*.deb' | head -n 1)"
+    DEB="$(ls -td "$BUNDLE_DIR"/deb/*.deb 2>/dev/null | head -n 1)"
     if [ -n "$DEB" ] && command -v dpkg >/dev/null 2>&1; then
         echo "Next, using sudo, this script will run: dpkg -i $DEB"
         echo "The package installs the udev rule to /etc/udev/rules.d/ and reloads udev (TAG uaccess, MODE 0660)."
@@ -49,7 +50,7 @@ Linux)
             echo "Skipped the .deb install."
         fi
     else
-        APPIMAGE="$(find "$BUNDLE_DIR/appimage" -maxdepth 1 -name '*.AppImage' | head -n 1)"
+        APPIMAGE="$(ls -td "$BUNDLE_DIR"/appimage/*.AppImage 2>/dev/null | head -n 1)"
         [ -n "$APPIMAGE" ] || { echo "No .deb or AppImage produced under $BUNDLE_DIR" >&2; exit 1; }
         BIN_DIR="$HOME/.local/bin"
         mkdir -p "$BIN_DIR"
