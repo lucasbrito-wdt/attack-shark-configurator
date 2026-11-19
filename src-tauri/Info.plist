@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>ATTACK SHARK X3 uses Bluetooth to configure the mouse when it is connected over Bluetooth LE.</string>
+  <key>NSBluetoothPeripheralUsageDescription</key>
+  <string>ATTACK SHARK X3 uses Bluetooth to configure the mouse when it is connected over Bluetooth LE.</string>
+</dict>
+</plist>

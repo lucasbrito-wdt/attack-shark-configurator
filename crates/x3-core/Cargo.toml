@@ -1,0 +1,29 @@
+[package]
+name = "x3-core"
+version = "0.1.0"
+edition = "2024"
+description = "Protocol, device layer, profile and storage for the ATTACK SHARK X3 mouse"
+license = "MIT"
+
+[lib]
+name = "x3_core"
+path = "src/lib.rs"
+
+[features]
+default = ["ble"]
+ble = ["dep:btleplug", "dep:tokio", "dep:futures", "dep:uuid"]
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+directories = "6"
+btleplug = { version = "0.13", optional = true }
+tokio = { version = "1", features = ["rt-multi-thread", "time", "macros"], optional = true }
+futures = { version = "0.3", default-features = false, features = ["std"], optional = true }
+uuid = { version = "1", optional = true }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+hidapi = "2.6"
+
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+hidapi = { version = "2.6", default-features = false, features = ["linux-native"] }

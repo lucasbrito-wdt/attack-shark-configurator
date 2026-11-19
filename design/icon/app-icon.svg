@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Original app icon: the X3-shaped shell from above, its stage LED lighting the plate. macOS grid: 824 plate at 100. -->
+  <defs>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2B3540" />
+      <stop offset="1" stop-color="#141A20" />
+    </linearGradient>
+    <radialGradient id="pool" cx="512" cy="470" r="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0FB4D2" stop-opacity="0.55" />
+      <stop offset="0.45" stop-color="#0FB4D2" stop-opacity="0.2" />
+      <stop offset="1" stop-color="#0FB4D2" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="dome" cx="0.38" cy="0.3" r="0.85">
+      <stop offset="0" stop-color="#FFFFFF" />
+      <stop offset="0.45" stop-color="#EEF1F4" />
+      <stop offset="0.85" stop-color="#C9D1D9" />
+      <stop offset="1" stop-color="#9AA6B2" />
+    </radialGradient>
+    <radialGradient id="tint" cx="200" cy="257" r="260" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0FB4D2" stop-opacity="0.35" />
+      <stop offset="1" stop-color="#0FB4D2" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="wheel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#151B21" />
+      <stop offset="0.5" stop-color="#3A444E" />
+      <stop offset="1" stop-color="#151B21" />
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10" />
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <filter id="plateShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="14" />
+    </filter>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="18" /></filter>
+    <filter id="bloom" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="10" /></filter>
+    <clipPath id="plateClip"><rect x="100" y="100" width="824" height="824" rx="185" /></clipPath>
+    <path id="shell" d="M200 30 C286 30 340 72 348 168 C354 236 344 300 346 362 C348 428 368 486 370 566 C372 654 298 706 200 706 C102 706 28 654 30 566 C32 486 52 428 54 362 C56 300 46 236 52 168 C60 72 114 30 200 30 Z" />
+    <clipPath id="shellClip"><use href="#shell" /></clipPath>
+  </defs>
+
+  <!-- plate and its shadow -->
+  <rect x="100" y="112" width="824" height="824" rx="185" fill="#000000" opacity="0.32" filter="url(#plateShadow)" />
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#plate)" />
+  <rect x="101.5" y="101.5" width="821" height="821" rx="183.5" fill="none" stroke="#FFFFFF" stroke-opacity="0.07" stroke-width="3" />
+
+  <g clip-path="url(#plateClip)">
+    <!-- light pool the stage LED casts on the plate -->
+    <rect x="100" y="100" width="824" height="824" fill="url(#pool)" />
+    <rect x="100" y="100" width="824" height="824" fill="url(#sheen)" />
+  </g>
+
+  <!-- the shell, 0.92 scale, centered -->
+  <g transform="translate(328 173.4) scale(0.92)">
+    <use href="#shell" transform="translate(6 14)" fill="#05080B" opacity="0.55" filter="url(#soft)" />
+    <use href="#shell" fill="url(#dome)" />
+    <g clip-path="url(#shellClip)">
+      <rect x="0" y="0" width="400" height="720" fill="url(#tint)" />
+    </g>
+    <!-- button seam and center split: dark groove with a lit lip, kept inside the shell -->
+    <g clip-path="url(#shellClip)" fill="none" stroke-linecap="round">
+      <path d="M40 314 C96 342 150 350 200 352 C250 350 304 342 360 314 M200 20 L200 76 M200 300 L200 352" stroke="#FFFFFF" stroke-width="3" opacity="0.9" transform="translate(0 3)" />
+      <path d="M40 314 C96 342 150 350 200 352 C250 350 304 342 360 314 M200 20 L200 76 M200 300 L200 352" stroke="#7D8A97" stroke-width="3.5" />
+    </g>
+    <!-- wheel well, wheel, LED -->
+    <rect x="170" y="76" width="60" height="224" rx="30" fill="#1B232B" />
+    <rect x="182" y="90" width="36" height="128" rx="18" fill="url(#wheel)" />
+    <circle cx="200" cy="262" r="34" fill="#0FB4D2" opacity="0.85" filter="url(#bloom)" />
+    <rect x="192" y="240" width="16" height="34" rx="8" fill="#0FB4D2" />
+    <rect x="196" y="245" width="5" height="12" rx="2.5" fill="#FFFFFF" opacity="0.8" />
+  </g>
+</svg>

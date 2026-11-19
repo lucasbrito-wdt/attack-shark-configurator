@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default window capabilities",
+  "windows": ["main"],
+  "permissions": ["core:default", "dialog:allow-open", "dialog:allow-save", "updater:default", "process:allow-restart",
+    {"identifier": "opener:allow-open-url", "allow": [{"url": "https://github.com/lucasbrito-wdt/attack-shark-x3/releases*"}]}]
+}

@@ -1,0 +1,105 @@
+/* ATTACK SHARK X3 Configurator - design tokens (Tailwind CSS v4, CSS-first).
+   Import after `@import "tailwindcss";` in the app entry CSS. Fonts are self-hosted:
+     @import "@fontsource-variable/mona-sans/wdth.css";   (direction A)
+     @import "@fontsource-variable/archivo/wdth.css";     (direction B)
+   Direction A ("Shell & Stage Light") is the @theme default. Direction B ("Inside")
+   overrides the semantic aliases under [data-direction="inside"]. After the arena
+   choice, delete the losing direction's primitives and override block.
+   Origins of every hue: design/PLAN.md section 2. */
+
+@theme {
+  /* ---- A primitives: the outside of the mouse ---- */
+  --color-shell: #E9EDF1;       /* matte white ABS shell */
+  --color-shell-deep: #D3DAE1;  /* shell in shadow: borders, tracks */
+  --color-skate: #FBFCFD;       /* PTFE skate white: raised surfaces */
+  --color-wheel: #1B232B;       /* rubber scroll wheel: ink, primary action */
+  --color-wheel-muted: #4E5B67; /* secondary text on shell/skate (5.92:1) */
+  --color-led: #0FB4D2;         /* cyan indicator LED: focus, selection fill */
+  --color-led-deep: #076F83;    /* LED as text or stroke (AA on shell) */
+  --color-sensor: #C42B37;      /* sensor illumination red: errors only */
+
+  /* ---- B primitives: the inside of the mouse ---- */
+  --color-mask: #0D3B33;        /* green solder mask: ground */
+  --color-via: #0A2C27;         /* deep mask: wells, fields */
+  --color-silk: #E8F1EA;        /* silkscreen legend white: text */
+  --color-silk-muted: #A9C9BC;  /* secondary text on mask (6.96:1) */
+  --color-pad: #E2BC5C;         /* ENIG gold pads: primary action */
+  --color-lens: #7FD9C0;        /* lit sensor lens: selection, focus, sensor field */
+  --color-fault: #FF8A7A;       /* status LED red: errors only */
+
+  /* ---- semantic aliases (components use these) ---- */
+  --color-ground: var(--color-shell);
+  --color-panel: var(--color-skate);
+  --color-ink: var(--color-wheel);
+  --color-ink-muted: var(--color-wheel-muted);
+  --color-line: var(--color-shell-deep);
+  --color-signal: var(--color-led);
+  --color-signal-ink: var(--color-led-deep);
+  --color-primary: var(--color-wheel);
+  --color-on-primary: var(--color-skate);
+  --color-danger: var(--color-sensor);
+
+  /* ---- type ---- */
+  --font-sans: "Mona Sans Variable", "Mona Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-instrument: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  /* modular scale 1.25 from 14px; display sizes are fluid between the 960 and 1180 windows */
+  --text-micro: 0.7rem;
+  --text-micro--line-height: 1rem;
+  --text-body: 0.875rem;
+  --text-body--line-height: 1.35rem;
+  --text-lead: 1.09375rem;
+  --text-lead--line-height: 1.6rem;
+  --text-title: 1.367rem;
+  --text-title--line-height: 1.8rem;
+  --text-heading: clamp(1.5rem, 0.9rem + 1vw, 1.709rem);
+  --text-heading--line-height: 1.15;
+  --text-display: clamp(2.25rem, 0.6rem + 2.6vw, 2.67rem);
+  --text-display--line-height: 1.05;
+  --text-numeral: clamp(3.75rem, 0.2rem + 6.2vw, 5.2rem);
+  --text-numeral--line-height: 0.95;
+
+  /* ---- radii: hierarchy, not one radius everywhere ---- */
+  --radius-key: 10px;    /* controls: the size of a switch cap edge */
+  --radius-panel: 22px;  /* panels: the shell's front curve */
+  --radius-pad: 6px;     /* B controls: PCB pad */
+  --radius-board: 16px;  /* B panels: board corner */
+
+  /* ---- shadows tinted with the material, never a neutral gray ---- */
+  --shadow-lift: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 12px 28px -14px rgb(27 35 43 / 0.38);
+  --shadow-float: 0 1px 0 rgb(255 255 255 / 0.9) inset, 0 28px 60px -24px rgb(27 35 43 / 0.45);
+  --shadow-press: inset 0 1px 3px rgb(27 35 43 / 0.22);
+  --shadow-board: 0 1px 0 rgb(232 241 234 / 0.08) inset, 0 24px 48px -20px rgb(4 20 17 / 0.7);
+
+  /* ---- motion: a switch actuation, fast pre-travel and a firm stop ---- */
+  --ease-actuation: cubic-bezier(0.2, 0.8, 0.12, 1);
+  --animate-led-blink: led-blink 0.42s var(--ease-actuation) 2;
+
+  @keyframes led-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+}
+
+/* motion-v springs read these so CSS and JS share one feel */
+:root {
+  --spring-click-stiffness: 520;
+  --spring-click-damping: 38;
+}
+
+[data-direction="inside"] {
+  --color-ground: var(--color-mask);
+  --color-panel: var(--color-via);
+  --color-ink: var(--color-silk);
+  --color-ink-muted: var(--color-silk-muted);
+  --color-line: #1E5A4D;
+  --color-signal: var(--color-lens);
+  --color-signal-ink: var(--color-lens);
+  --color-primary: var(--color-pad);
+  --color-on-primary: var(--color-mask);
+  --color-danger: var(--color-fault);
+  --font-sans: var(--font-instrument);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --animate-led-blink: none; }
+}
