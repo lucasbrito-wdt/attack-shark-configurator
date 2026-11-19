@@ -56,7 +56,6 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ""
         with:
-          projectPath: src-tauri
           tagName: ${{ github.ref_name }}
           releaseName: "ATTACK SHARK X3 ${{ github.ref_name }}"
           releaseDraft: true
