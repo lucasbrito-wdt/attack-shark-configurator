@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Troubleshooting
+    url: https://github.com/lucasbrito-wdt/attack-shark-configurator#permissions-and-troubleshooting
+    about: Permissions, udev, Bluetooth and "mouse not detected" fixes. Check here before filing a bug.
+  - name: Latest release
+    url: https://github.com/lucasbrito-wdt/attack-shark-configurator/releases/latest
+    about: Make sure you are on the newest version.

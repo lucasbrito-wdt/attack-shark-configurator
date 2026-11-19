@@ -1,0 +1,68 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the [troubleshooting section](https://github.com/lucasbrito-wdt/attack-shark-configurator#permissions-and-troubleshooting) first and update to the [latest release](https://github.com/lucasbrito-wdt/attack-shark-configurator/releases/latest).
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system and version
+      placeholder: "macOS 15.1, Ubuntu 24.04, Windows 11 23H2"
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Mouse model
+      placeholder: "X6"
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Connection type
+      options: [USB cable, 2.4G receiver, 2.4G 4K receiver, Bluetooth LE]
+    validations:
+      required: true
+  - type: input
+    id: firmware
+    attributes:
+      label: Firmware version
+      description: Shown by the app or by `shark-probe --read`. Leave empty if unknown.
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. ...
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Run the app with `SHARK_LOG_RAW=1` for raw reports. Remove anything private.
+      render: shell

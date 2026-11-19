@@ -1,0 +1,38 @@
+name: Model report or request
+description: Add support for a model, or report that a listed one works or fails
+labels: [model]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Only the X6 is verified on hardware. Reports for other models are the fastest way to get them confirmed.
+        The probe is read-only and never writes configuration.
+  - type: input
+    id: model
+    attributes:
+      label: Model name
+      placeholder: "ATTACK SHARK X3 MAX"
+    validations:
+      required: true
+  - type: input
+    id: vidpid
+    attributes:
+      label: USB VID:PID
+      description: For each connection you can test (cable, receiver). Visible in the probe output.
+      placeholder: "1d57:fa61"
+    validations:
+      required: true
+  - type: textarea
+    id: probe
+    attributes:
+      label: shark-probe output
+      description: |
+        Plug the cable or receiver, run `cargo run -p shark-core --bin shark-probe -- --read` and paste the full output.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: What you tested
+      description: Connections tried and which features worked or failed. Optional for models not yet listed.
