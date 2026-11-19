@@ -12,6 +12,7 @@ mod tray;
 mod tray_glyph;
 mod tray_i18n;
 
+#[cfg(target_os = "macos")]
 use tauri::Manager;
 
 fn main() {
