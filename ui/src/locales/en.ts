@@ -412,6 +412,7 @@ const en = {
     changeNotConfirmed: "The mouse did not confirm the change. Check the cable or receiver, then try again.",
     appliedExceptDpi: "Applied, except DPI",
     applied: "Applied. The mouse confirmed every change.",
+    bleUnconfirmed: "Sent over Bluetooth, but the mouse does not confirm writes this way. To be sure, apply with the cable or the 2.4G receiver.",
     bleKeepsPolling: "Bluetooth keeps its own polling rate.",
     disconnected: "The mouse disconnected while writing. Reconnect it and apply again.",
   },

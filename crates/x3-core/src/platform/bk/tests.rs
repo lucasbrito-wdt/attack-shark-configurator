@@ -204,13 +204,31 @@ fn c1_button_types() {
     p.buttons[4].action_id = 0x21; // Copy preset
     p.buttons[5].action_id = 0x0A; // Fire Button: no C1 equivalent
     p.buttons[8].action_id = 0x45; // Volume +
-    let b = build_button_map(&wire("f1"), &p);
+    let b = build_button_map(spec("f1"), &wire("f1"), &p);
     let slot = |i: usize| &b[3 + 3 * i..6 + 3 * i];
     assert_eq!((slot(0), slot(1), slot(2)), (&[2, 0, 0][..], &[3, 0, 0][..], &[4, 0, 0][..]));
     assert_eq!((slot(3), slot(4), slot(5)), (&[17, 1, 6][..], &[17, 1, 6][..], &[1, 0, 0][..]));
     assert_eq!((slot(6), slot(7), slot(8)), (&[5, 0, 0][..], &[6, 0, 0][..], &[27, 0, 0][..]));
     assert_eq!(u16::from_be_bytes([b[57], b[58]]), checksum16(&b[3..=56]));
-    assert_eq!(build_button_map(&wire("x3-max"), &p), packets::build_buttons(&p));
+    // family B without a factory table: the exposed slots as family A, the hidden ones 00 00 00
+    let b = build_button_map(spec("x3-max"), &wire("x3-max"), &p);
+    let a = packets::build_buttons(&p);
+    assert_eq!((&b[..12], &b[21..27]), (&a[..12], &a[21..27]));
+    assert!(b[12..21].iter().chain(&b[27..57]).all(|x| *x == 0));
+    assert_eq!(u16::from_be_bytes([b[57], b[58]]), checksum16(&b[3..=56]));
+}
+
+#[test]
+fn x6_hidden_slots_keep_the_factory_actions() {
+    // the slots the app hides (DPI keys 3..5, slot 8, wheel 16/17) are the X6 factory map that
+    // restored a real X6; the exposed ones (0..2, 6, 7) follow the profile
+    let b = build_button_map(spec("x6"), &wire("x6"), &Profile::default());
+    let slot = |i: usize| b[3 + 3 * i];
+    assert_eq!([slot(0), slot(1), slot(2), slot(6), slot(7)], [0x02, 0x03, 0x04, 0x05, 0x06]);
+    assert_eq!([slot(3), slot(4), slot(5), slot(8), slot(16), slot(17)], [0x0D, 0x0E, 0x0F, 0x3C, 0x0A, 0x09]);
+    assert!((9..16).all(|i| slot(i) == 0x01));
+    assert!((0..18).all(|i| b[4 + 3 * i] == 0 && b[5 + 3 * i] == 0));
+    assert_eq!(u16::from_be_bytes([b[57], b[58]]), checksum16(&b[3..=56]));
 }
 
 #[test]

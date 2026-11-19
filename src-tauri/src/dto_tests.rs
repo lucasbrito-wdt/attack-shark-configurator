@@ -82,8 +82,8 @@ fn macro_and_result_keys() {
 #[test]
 fn event_payload_keys() {
     let progress =
-        ApplyProgress { state: ProgressState::Retry, packets: 2, skipped: 0, failed: 0, attempt: Some(3), reason: None, skipped_groups: Vec::new() };
-    assert_eq!(keys(&progress), ["attempt", "failed", "packets", "reason", "skipped", "skippedGroups", "state"]);
+        ApplyProgress { state: ProgressState::Retry, packets: 2, skipped: 0, failed: 0, attempt: Some(3), reason: None, skipped_groups: Vec::new(), unconfirmed: false };
+    assert_eq!(keys(&progress), ["attempt", "failed", "packets", "reason", "skipped", "skippedGroups", "state", "unconfirmed"]);
     assert_eq!(keys(&DpiStageChanged { stage: 1, dpi: 1600 }), ["dpi", "stage"]);
     assert_eq!(keys(&DeviceEventRaw { event: String::new() }), ["event"]);
     let done = DpiVerification { status: VerificationStatus::UnsupportedLink, format: None, reason: Some("ble".into()) };

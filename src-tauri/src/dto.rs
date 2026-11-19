@@ -330,6 +330,8 @@ pub struct ApplyProgress {
     pub reason: Option<String>,
     /// Groups this apply left out on purpose (same as `ApplyResult.skippedGroups`).
     pub skipped_groups: Vec<SkippedGroup>,
+    /// Sent over Bluetooth, where the mouse acknowledges nothing: the profile stays pending.
+    pub unconfirmed: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

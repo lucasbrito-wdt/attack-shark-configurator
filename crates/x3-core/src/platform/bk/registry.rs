@@ -60,6 +60,8 @@ pub struct BkWire {
     pub family: BkFamily,
     pub dpi: BkDpi,
     pub polling: PollingEncoding,
+    /// Factory action id per 0x08 slot, used for the slots the app does not expose (DPI keys, wheel).
+    pub factory_buttons: Option<&'static [u8; 18]>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -99,6 +101,11 @@ const C1_BUTTONS: [ButtonInfo; 5] = [
     button(5, "Side forward", "side-forward"),
 ];
 
+/// Factory button defaults (`sub_4155e0`): X6.exe @0x41D9D0 and X3.exe @0x41C9E0. Observed; the X6
+/// table, encoded with the official action table, restored an X6 whose DPI keys and wheel were off.
+const X6_FACTORY_BUTTONS: [u8; 18] = [0x01, 0x02, 0x03, 0x06, 0x07, 0x08, 0x04, 0x05, 0x34, 0, 0, 0, 0, 0, 0, 0, 0x0C, 0x0B];
+const X3_FACTORY_BUTTONS: [u8; 18] = [0x01, 0x02, 0x03, 0x06, 0x34, 0x08, 0x04, 0x05, 0x34, 0, 0, 0, 0, 0, 0, 0, 0x0C, 0x0B];
+
 const fn encoding_name(dpi: BkDpi) -> &'static str {
     match dpi {
         BkDpi::A { .. } => "a",
@@ -131,7 +138,7 @@ const fn page(id: &'static str, name: &'static str, code: u8, wired: u16, ble: u
             },
             read_back: true,
         },
-        wire: BkWire { family: BkFamily::B, dpi, polling: PollingEncoding::Interval },
+        wire: BkWire { family: BkFamily::B, dpi, polling: PollingEncoding::Interval, factory_buttons: None },
     }
 }
 
@@ -173,12 +180,13 @@ impl BkModel {
     /// Family A device (X3.exe): shares FA61/FA60/BLE 0040 and model code 0x10 with the R1 page.
     /// Family A sends `enc = u - 1`, the R1 page sends variant T for the same PID (family-b unknown #1):
     /// the DPI write is unverified until a read-back settles it.
-    const fn family_a(id: &'static str, name: &'static str) -> Self {
+    const fn family_a(id: &'static str, name: &'static str, factory: &'static [u8; 18]) -> Self {
         let mut m = page(id, name, 0x10, PID_SHARED_WIRED, 0x0040, BkDpi::A { trailer: 0x01 }).lod();
         m.spec.dpi.verified = false;
         m.spec.battery.rule = ChargeRule::AwakeFlag;
         m.spec.read_back = false;
         m.wire.family = BkFamily::A;
+        m.wire.factory_buttons = Some(factory);
         m
     }
 
@@ -217,8 +225,8 @@ use TableStyle::{R1, V3};
 // inferred: T style per page; only R1 (MS3) and V3 (MS18) were decompiled. MS4 follows R1 (same
 // generation, max <= 340); every other T page follows V3 because it reaches u >= 341 or shares MS18's code path.
 pub static MODELS: [BkModel; 22] = [
-    BkModel::family_a("x6", "X6"),
-    BkModel::family_a("x3", "X3"),
+    BkModel::family_a("x6", "X6", &X6_FACTORY_BUTTONS),
+    BkModel::family_a("x3", "X3", &X3_FACTORY_BUTTONS),
     page("x6-2055", "X6", 0x85, 0x2055, 0x0085, A { trailer: 0x01 }).lod().lit(),
     page("x3-201b", "X3", 0x4D, 0x201B, 0x004D, A { trailer: 0x01 }).lod(),
     page("r1", "R1", 0x10, PID_SHARED_WIRED, 0x0040, t(R1)).units(280, Some(200)).lit(),

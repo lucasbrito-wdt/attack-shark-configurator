@@ -3,8 +3,8 @@
 
 use super::registry::{BkDpi, BkFamily, BkWire, PollingEncoding, TableStyle};
 use crate::platform::ModelSpec;
-use crate::profile::{ACTION_MACRO, ACTION_SHORTCUT, BUTTON_COUNT, DPI_STAGES, Profile};
-use crate::protocol::actions::{Group, info};
+use crate::profile::{ACTION_MACRO, ACTION_SHORTCUT, BUTTON_COUNT, ButtonConfig, DPI_STAGES, Profile};
+use crate::protocol::actions::{Group, info, wire_triplet};
 use crate::protocol::packets::{build_buttons, build_lighting_with, build_sensor as build_sensor_a};
 use crate::protocol::{CMD_BUTTONS, CMD_POLLING, CMD_SENSOR, seal};
 
@@ -216,9 +216,18 @@ pub fn c1_triplet(p: &Profile, index: usize) -> [u8; 3] {
 }
 
 /// Command 0x08 (59 bytes): legacy triplets for families A/B, C1 types for C1.
-pub fn build_button_map(wire: &BkWire, p: &Profile) -> Vec<u8> {
+pub fn build_button_map(spec: &ModelSpec, wire: &BkWire, p: &Profile) -> Vec<u8> {
     if wire.family != BkFamily::C1 {
-        return build_buttons(p);
+        let mut b = build_buttons(p);
+        // slots the app does not expose (DPI keys, wheel) keep the factory action: the profile holds
+        // action 0 there, which encodes as 0x01 (disabled) and turned off the X6 wheel and DPI keys.
+        // Without a factory table they stay 00 00 00, which kept the X6 wheel working.
+        for i in (0..BUTTON_COUNT).filter(|i| !spec.buttons.iter().any(|x| usize::from(x.id) == *i)) {
+            let factory = wire.factory_buttons.map(|t| ButtonConfig { action_id: t[i], ..ButtonConfig::default() });
+            b[3 + 3 * i..6 + 3 * i].copy_from_slice(&factory.map_or([0; 3], |f| wire_triplet(&f, i)));
+        }
+        seal(&mut b, 3, 56);
+        return b;
     }
     let mut b = vec![0u8; 59];
     b[..3].copy_from_slice(&[CMD_BUTTONS, 0x3B, 0x01]);

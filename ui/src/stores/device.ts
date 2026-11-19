@@ -66,8 +66,9 @@ export const useDevice = defineStore("device", () => {
     packets: 0,
     attempt: null as number | null,
     message: "",
-    /** "unverified" marks the DPI-encoding refusal so the dock can point to the DPI screen */
-    kind: "" as "" | "unverified",
+    /** "unverified" marks the DPI-encoding refusal so the dock can point to the DPI screen;
+     *  "unconfirmed" is a Bluetooth write the mouse could not confirm */
+    kind: "" as "" | "unverified" | "unconfirmed",
     groups: [] as GroupId[],
   });
   let announce: string | null = null;
@@ -137,6 +138,10 @@ export const useDevice = defineStore("device", () => {
       pendingGroups.value = p.skippedGroups;
       dock.groups = dock.groups.filter((g) => g === "sensor");
       Object.assign(dock, { state: "failed", kind: "unverified", message: t("dock.appliedExceptDpi") });
+      announce = null;
+    } else if (p.unconfirmed) {
+      // sent, but over Bluetooth the mouse confirms nothing: keep the profile pending
+      Object.assign(dock, { state: "failed", kind: "unconfirmed", message: t("dock.bleUnconfirmed") });
       announce = null;
     } else {
       pendingChanges.value = false;

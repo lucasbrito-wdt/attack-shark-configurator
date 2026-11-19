@@ -347,6 +347,8 @@ export interface ApplyProgress {
   reason: string | null;
   /** Same as ApplyResult.skippedGroups for this apply. */
   skippedGroups: SkippedGroup[];
+  /** `ok` over Bluetooth: the mouse acknowledges no BLE write, so the profile stays pending. */
+  unconfirmed: boolean;
 }
 
 export interface DpiStageChanged {

@@ -42,6 +42,8 @@ pub struct Inner {
     applied: Option<Profile>,
     in_flight: Option<Profile>,
     in_flight_skipped: Vec<SkippedGroup>,
+    /// The in-flight apply goes over Bluetooth (no write acknowledgement, no read-back).
+    in_flight_ble: bool,
     /// Groups skipped by the last apply and not yet written; they stay pending until a write succeeds.
     pending_groups: Vec<SkippedGroup>,
     /// A model was detected for the current links; until then apply answers `unsupported_model`.
@@ -84,6 +86,7 @@ impl Inner {
             applied: None,
             in_flight: None,
             in_flight_skipped: Vec::new(),
+            in_flight_ble: false,
             pending_groups: Vec::new(),
             identified: false,
             sending: 0,
@@ -245,8 +248,12 @@ impl Inner {
     fn on_send_done(&mut self, sent: usize, skipped: usize, failed: usize) {
         self.sending = self.sending.saturating_sub(1);
         let snapshot = self.in_flight.take();
+        let unconfirmed = std::mem::take(&mut self.in_flight_ble) && failed == 0;
         let (state, reason) = if failed == 0 {
-            self.applied = snapshot;
+            // a BLE write that lands is indistinguishable from one the firmware drops (observed on the X6)
+            if !unconfirmed {
+                self.applied = snapshot;
+            }
             (ProgressState::Ok, (skipped > 0).then(|| "polling rate is not sent over Bluetooth".to_string()))
         } else {
             (ProgressState::Failed, Some(format!("{failed} packet(s) not delivered")))
@@ -255,7 +262,7 @@ impl Inner {
         if failed == 0 || !skipped_groups.is_empty() {
             self.pending_groups = skipped_groups.clone();
         }
-        self.outbox.push(Emit::Progress(ApplyProgress { state, packets: sent + skipped + failed, skipped, failed, attempt: None, reason, skipped_groups }));
+        self.outbox.push(Emit::Progress(ApplyProgress { state, packets: sent + skipped + failed, skipped, failed, attempt: None, reason, skipped_groups, unconfirmed }));
         if std::mem::take(&mut self.dirty)
             && failed == 0
             && let Err(e) = self.apply(false, false)
@@ -326,8 +333,9 @@ impl Inner {
         let count = packets.len();
         self.in_flight = Some(profile);
         self.in_flight_skipped = skipped_groups.clone();
+        self.in_flight_ble = self.links.iter().next() == Some(&LinkKind::Ble);
         self.sending += 1;
-        let progress = ApplyProgress { state: ProgressState::Pending, packets: count, skipped: 0, failed: 0, attempt: None, reason: None, skipped_groups: skipped_groups.clone() };
+        let progress = ApplyProgress { state: ProgressState::Pending, packets: count, skipped: 0, failed: 0, attempt: None, reason: None, skipped_groups: skipped_groups.clone(), unconfirmed: false };
         self.outbox.push(Emit::Progress(progress));
         (self.send)(packets);
         Ok(ApplyResult { status: ApplyStatus::Queued, packets: count, skipped_groups })

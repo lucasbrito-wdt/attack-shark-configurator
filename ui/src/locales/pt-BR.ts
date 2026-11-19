@@ -413,6 +413,7 @@ const ptBR: MessageSchema = {
     changeNotConfirmed: "O mouse não confirmou a alteração. Verifique o cabo ou o receptor e tente de novo.",
     appliedExceptDpi: "Aplicado, exceto o DPI",
     applied: "Aplicado. O mouse confirmou todas as alterações.",
+    bleUnconfirmed: "Enviado pelo Bluetooth, mas o mouse não confirma gravações por esse caminho. Para garantir, aplique com o cabo ou o receptor 2.4G.",
     bleKeepsPolling: "O Bluetooth mantém o próprio polling rate.",
     disconnected: "O mouse desconectou durante a gravação. Reconecte e aplique de novo.",
   },

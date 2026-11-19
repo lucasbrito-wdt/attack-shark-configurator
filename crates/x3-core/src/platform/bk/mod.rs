@@ -44,7 +44,7 @@ impl PlatformCodec for BkCodec {
                 &|p| codec::build_sensor(spec, &wire, p),
                 &|p| codec::build_lighting(&wire, p),
                 &|p| codec::build_polling(&wire, p),
-                &|p| codec::build_button_map(&wire, p),
+                &|p| codec::build_button_map(spec, &wire, p),
             ],
             spec.macros,
         );

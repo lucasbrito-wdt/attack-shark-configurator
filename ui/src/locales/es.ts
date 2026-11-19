@@ -413,6 +413,7 @@ const es: MessageSchema = {
     changeNotConfirmed: "El mouse no confirmó el cambio. Revisa el cable o el receptor y vuelve a intentarlo.",
     appliedExceptDpi: "Aplicado, excepto el DPI",
     applied: "Aplicado. El mouse confirmó todos los cambios.",
+    bleUnconfirmed: "Enviado por Bluetooth, pero el mouse no confirma las escrituras por esta vía. Para asegurarte, aplica con el cable o el receptor 2.4G.",
     bleKeepsPolling: "El Bluetooth mantiene su propio polling rate.",
     disconnected: "El mouse se desconectó durante la escritura. Vuelve a conectarlo y aplica de nuevo.",
   },

@@ -243,6 +243,20 @@ fn settings_apply_only_with_a_device_and_track_progress() {
 }
 
 #[test]
+fn ble_apply_is_unconfirmed_and_stays_pending() {
+    let (mut i, _) = inner();
+    connect(&mut i, LinkKind::Ble);
+    let r = i.apply(false, true).unwrap();
+    i.on_msg(DeviceMsg::SendDone { sent: r.packets, skipped: 0, failed: 0 });
+    assert!(i.outbox.iter().any(|e| matches!(e, Emit::Progress(p) if p.state == ProgressState::Ok && p.unconfirmed)));
+    assert!(i.pending_changes(), "the mouse never confirmed it, so the profile is still pending");
+    connect(&mut i, LinkKind::Wired);
+    let r = i.apply(false, false).unwrap();
+    i.on_msg(DeviceMsg::SendDone { sent: r.packets, skipped: 0, failed: 0 });
+    assert!(!i.pending_changes(), "the cable acknowledges the write");
+}
+
+#[test]
 fn reset_requires_confirmation_and_sends_resync_only_then() {
     let (mut i, sent) = inner();
     connect(&mut i, LinkKind::Wired);

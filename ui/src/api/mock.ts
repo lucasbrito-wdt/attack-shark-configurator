@@ -181,7 +181,7 @@ export class MockBackend {
     const packets = full || resync ? 5 : 2;
     this.sending = true;
     const progress = (p: Partial<ApplyProgress> & Pick<ApplyProgress, "state">) =>
-      this.emit("apply-progress", { packets, skipped: 0, failed: 0, attempt: null, reason: null, skippedGroups, ...p });
+      this.emit("apply-progress", { packets, skipped: 0, failed: 0, attempt: null, reason: null, skippedGroups, unconfirmed: false, ...p });
     progress({ state: "pending" });
     void (async () => {
       if (this.behavior === "retry-then-ok") {
@@ -195,9 +195,10 @@ export class MockBackend {
       if (this.behavior === "fail") {
         progress({ state: "failed", failed: 1, reason: "1 packet(s) not delivered" });
       } else {
+        const ble = this.mode === "ble";
         this.pendingGroups = skippedGroups;
-        this.pending = skippedGroups.length > 0;
-        progress({ state: "ok", skipped: this.mode === "ble" ? 1 : 0, reason: this.mode === "ble" ? "polling rate is not sent over Bluetooth" : null });
+        this.pending = ble || skippedGroups.length > 0;
+        progress({ state: "ok", skipped: ble ? 1 : 0, reason: ble ? "polling rate is not sent over Bluetooth" : null, unconfirmed: ble });
       }
     })();
     return { status: "queued", packets, skippedGroups };

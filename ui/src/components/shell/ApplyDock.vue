@@ -52,9 +52,9 @@ const view = computed(() => {
 
     <template v-else-if="view === 'failed' || view === 'blocked'">
       <div class="flex min-w-0 flex-1 items-center gap-3">
-        <span :class="['grid size-8 shrink-0 place-items-center rounded-full text-skate', d.kind === 'unverified' ? 'bg-led-deep' : 'bg-sensor']"><AppIcon :name="view === 'blocked' ? 'sleep' : 'alert'" class="size-4" /></span>
+        <span :class="['grid size-8 shrink-0 place-items-center rounded-full text-skate', d.kind ? 'bg-led-deep' : 'bg-sensor']"><AppIcon :name="view === 'blocked' ? 'sleep' : 'alert'" class="size-4" /></span>
         <span class="min-w-0">
-          <span :class="['block font-semibold', d.kind === 'unverified' ? 'text-wheel' : 'text-sensor']">{{ d.message }}</span>
+          <span :class="['block font-semibold', d.kind ? 'text-wheel' : 'text-sensor']">{{ d.message }}</span>
         </span>
       </div>
       <div class="ml-auto flex shrink-0 items-center gap-2">

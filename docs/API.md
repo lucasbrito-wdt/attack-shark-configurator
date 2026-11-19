@@ -109,7 +109,7 @@ Output buttons always carry `label`, the text to display.
 |---|---|---|
 | `device-status` | `DeviceStatus` | on every visible change (link up/down, heartbeat, sleep/wake via heartbeat watchdog, name) |
 | `dpi-stage-changed` | `{ stage, dpi }` | the mouse button changed the DPI stage. The stored profile's `activeStage` is already updated |
-| `apply-progress` | `ApplyProgress` | `pending` when packets are queued, then `ok` or `failed`. `retry` (with `attempt`) is part of the contract but the Rust sender does not report retries yet; only the mock emits it |
+| `apply-progress` | `ApplyProgress` | `pending` when packets are queued, then `ok` or `failed`. `retry` (with `attempt`) is part of the contract but the Rust sender does not report retries yet; only the mock emits it `unconfirmed: true` on an `ok` sent over Bluetooth: the mouse acknowledges no BLE write, so the profile stays pending |
 | `device-event-raw` | `{ event }` | only with `X3_LOG_EVENTS=1`; Debug text of the parsed event (not raw bytes; raw hex goes to stderr) |
 | `dpi-verification` | `{ state: "running" }` or `{ state: "done", result: DpiVerification }` | a DPI encoding check started (manual or automatic) / ended. Immediate answers (`unsupported_link`, verified in the table) emit only `done` |
 
